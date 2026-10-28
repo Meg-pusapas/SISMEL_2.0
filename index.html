@@ -8,7 +8,7 @@
     <!-- Google Fonts (con fuentes de respaldo si no cargan) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 
     <!-- Estilos: Tailwind compilado + Leaflet (todo local, sin CDNs de runtime) -->
     <link rel="stylesheet" href="tailwind.css">
@@ -140,8 +140,11 @@
                 <a href="#psicosocial" class="nav-item" onclick="setActiveNav(this)">
                     <i data-lucide="heart-handshake" class="w-4 h-4"></i> 4 · Análisis psicosocial
                 </a>
+                <a href="#sismel" class="nav-item" onclick="setActiveNav(this)">
+                    <i data-lucide="brain-circuit" class="w-4 h-4"></i> 5 · Modelo SISMEL
+                </a>
                 <a href="#matriz" class="nav-item" onclick="setActiveNav(this)">
-                    <i data-lucide="table" class="w-4 h-4"></i> 5 · Matriz de datos
+                    <i data-lucide="table" class="w-4 h-4"></i> 6 · Matriz de datos
                 </a>
             </nav>
         </div>
@@ -151,7 +154,7 @@
                 <span class="font-medium text-textDark">Fuente de datos</span>
                 <span class="bg-warmYellow text-warmYellowDark px-2 py-0.5 rounded text-[10px] font-semibold">23 Ciudades</span>
             </div>
-            <p class="text-[10px] leading-tight">GEIH-DANE · INMLCF 2015–2026</p>
+            <p class="text-[10px] leading-tight">GEIH-DANE · INMLCF 2015–2026 · Modelo SISMEL</p>
         </div>
     </aside>
 
@@ -415,10 +418,91 @@
                 </div>
             </section>
 
-            <!-- MÓDULO 05 -->
+            <!-- MÓDULO 05 · SISMEL -->
+            <section id="sismel" class="space-y-5 pt-6 border-t border-[#e8e2d5]">
+                <div class="space-y-1">
+                    <p class="text-[10px] font-bold text-burgundy uppercase tracking-widest font-mono">MÓDULO 05 · INMLCF + SISMEL</p>
+                    <h2 class="font-serif font-bold text-2xl text-textDark">Resultados del modelo SISMEL</h2>
+                    <p class="text-xs text-textMuted">Clasificación de la causa <strong>laboral o económica</strong> vs. otras causas con validación temporal (resultados nacionales; no cambian con la ciudad en foco).</p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-5 gap-2 bg-[#f5f0e6] border border-[#e8e2d5] rounded-2xl p-3 text-[11px]" id="sm-steps"></div>
+
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-3" id="sm-kpis"></div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+                    <div class="lg:col-span-7 card-editorial p-5 space-y-3">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <h3 class="font-bold text-sm text-textDark">Comparación de modelos</h3>
+                            <div class="inline-flex bg-[#eee9df] rounded-xl p-1 text-[11px] font-semibold" id="sm-stage-toggle">
+                                <button data-s="1" class="px-3 py-1 rounded-lg">Etapa 1 · prueba 2022–2024</button>
+                                <button data-s="2" class="px-3 py-1 rounded-lg">Etapa 2 · final 2025–2026</button>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto"><table class="w-full text-xs min-w-[460px]"><thead><tr class="text-[10px] uppercase text-textMuted border-b border-[#eee8dc]"><th class="py-2 text-left">Modelo</th><th class="text-left">AUC (IC 95 %)</th><th class="text-right">AP</th><th class="text-right">Lift@20</th><th class="text-right">Recall@20</th></tr></thead><tbody id="sm-model-body"></tbody></table></div>
+                        <p class="text-[10px] text-textMuted" id="sm-ref"></p>
+                    </div>
+                    <div class="lg:col-span-5 card-editorial p-5 space-y-2 flex flex-col">
+                        <h3 class="font-bold text-sm text-textDark">AUC año por año (regresión logística)</h3>
+                        <p class="text-[11px] text-textMuted">Cada año se prueba con un modelo entrenado solo con los años anteriores.</p>
+                        <div class="chart-container flex-1"><canvas id="smValChart"></canvas></div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+                    <div class="lg:col-span-6 card-editorial p-5 space-y-2 flex flex-col">
+                        <h3 class="font-bold text-sm text-textDark">Importancia de variables</h3>
+                        <p class="text-[11px] text-textMuted">Caída del AUC al desordenar cada variable (permutación). Mayor caída = pesa más.</p>
+                        <div class="chart-container flex-1 min-h-[300px]"><canvas id="smImpChart"></canvas></div>
+                    </div>
+                    <div class="lg:col-span-6 card-editorial p-5 space-y-3">
+                        <div class="flex items-center justify-between gap-2">
+                            <div><h3 class="font-bold text-sm text-textDark">Perfil de mayor riesgo</h3><p class="text-[11px] text-textMuted">% de casos laboral/económicos con causa conocida, por grupo</p></div>
+                            <select id="sm-perfil-select" class="bg-white border border-[#d6cdbd] rounded-xl px-2.5 py-1.5 text-xs font-bold outline-none focus:border-burgundy"></select>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3" id="sm-sex"></div>
+                        <div class="chart-container" id="sm-perfil-wrap" style="height:260px;min-height:260px"><canvas id="smPerfilChart"></canvas></div>
+                        <p class="text-[10px] text-textMuted">Barras oscuras: por encima del promedio general (13,6 %). Solo categorías con ≥150 casos.</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+                    <div class="lg:col-span-8 card-editorial p-5 space-y-3">
+                        <div><h3 class="font-bold text-sm text-textDark">Matriz de asociación (V de Cramér)</h3><p class="text-[11px] text-textMuted">0 = independientes · 1 = una determina a la otra. Ordenada por asociación con la causa.</p></div>
+                        <div class="overflow-x-auto"><div id="sm-cramer" class="min-w-[620px]"></div></div>
+                    </div>
+                    <div class="lg:col-span-4 card-editorial p-5 space-y-3 bg-amber-50/60 border-amber-200/80">
+                        <span class="badge-pill bg-amber-200 text-amber-900 text-[10px] uppercase">Lectura</span>
+                        <p class="text-xs text-textDark leading-relaxed">Edad y ciclo vital miden casi lo mismo (<strong class="font-mono">0,88</strong>). Las asociaciones con la causa son <strong>bajas</strong>: la mayor es la edad (<strong class="font-mono">0,19</strong>). Ninguna variable separa bien las causas; el modelo combina señales débiles.</p>
+                        <p class="text-xs text-textDark leading-relaxed">Los tres modelos rinden casi igual y apenas superan la línea base de sexo y edad: el límite está en la información disponible, no en el algoritmo.</p>
+                    </div>
+                </div>
+
+                <div class="card-editorial p-5 space-y-4">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="badge-pill bg-amber-200 text-amber-900 font-bold uppercase text-[10px]"><i data-lucide="scale" class="w-3 h-3 text-burgundy"></i> Cruce con empleo (GEIH)</span>
+                        <h3 class="font-serif font-bold text-lg text-textDark">El empleo no explica la causa laboral/económica</h3>
+                    </div>
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                        <div class="lg:col-span-7 space-y-2">
+                            <p class="text-[11px] font-bold text-textDark">1 · Correlación de Spearman</p>
+                            <div class="overflow-x-auto"><table class="w-full text-[11px] min-w-[420px]"><thead><tr class="text-[10px] uppercase text-textMuted border-b border-[#eee8dc]"><th class="py-1.5 text-left">Indicador</th><th class="text-right">Nº casos</th><th class="text-right">Tasa /100 mil</th><th class="text-right">% causa conocida</th><th class="text-right">Tasa dentro del dpto.</th></tr></thead><tbody id="sm-spear"></tbody></table></div>
+                            <p class="text-[10px] text-textMuted">Las correlaciones con el nº de casos (hasta 0,24) reflejan el tamaño de la población. Con la tasa o dentro de cada departamento casi desaparecen. Destacado: |r| ≥ 0,15.</p>
+                        </div>
+                        <div class="lg:col-span-5 space-y-2">
+                            <p class="text-[11px] font-bold text-textDark">2 · ¿Mejora el clasificador al agregar empleo? (Δ AUC, IC 95 %)</p>
+                            <div id="sm-forest" class="space-y-2"></div>
+                            <p class="text-[10px] text-textMuted" id="sm-panel"></p>
+                        </div>
+                    </div>
+                    <p class="text-xs text-textMuted leading-relaxed bg-[#f5f0e6] border border-[#e8e2d5] rounded-xl p-3"><strong class="text-textDark">Hallazgo válido:</strong> no se encontró relación estadística entre los indicadores de empleo (por departamento y trimestre) y los suicidios de causa laboral o económica. La causa pesa más en la adultez y el adulto mayor, pero eso queda como contexto: el empleo no viene desagregado por edad. <strong class="text-textDark">Uso responsable:</strong> el modelo describe perfiles en datos agregados, no evalúa el riesgo de una persona ni asigna causas a casos individuales; los resultados son asociativos, no causales.</p>
+                </div>
+            </section>
+
+            <!-- MÓDULO 06 -->
             <section id="matriz" class="space-y-4 pt-6 border-t border-[#e8e2d5] pb-12">
                 <div class="space-y-1">
-                    <p class="text-[10px] font-bold text-burgundy uppercase tracking-widest">MÓDULO 05 · 23 CIUDADES</p>
+                    <p class="text-[10px] font-bold text-burgundy uppercase tracking-widest">MÓDULO 06 · 23 CIUDADES</p>
                     <h2 class="font-serif font-bold text-2xl text-textDark">Matriz de datos completa</h2>
                     <p class="text-xs text-textMuted">Haz clic en una fila para sincronizar todos los módulos con esa ciudad.</p>
                 </div>
@@ -892,6 +976,7 @@
             safeRun('dashboard', () => updateDashboard("Pasto"));
             safeRun('grafico PCA', () => { if (window.Chart) initPcaChart(); });
             safeRun('mapa', () => { if (window.L) initLeafletMap(); });
+            safeRun('SISMEL', initSismel);
         });
 
         function populateSelect() {
@@ -1254,6 +1339,72 @@
             document.getElementById('city-select').value = cityName;
             updateDashboard(cityName);
             window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ===== MÓDULO 05 · SISMEL (datos generados desde los CSV del notebook) =====
+        const SISMEL = {"mods":[{"e":1,"m":"Solo sexo y edad (ref.)","auc":0.6813027457395818,"lo":0.6592971040395561,"hi":0.7065543301608207,"ap":0.21530028286086586,"lift":1.789713348323505,"rec":0.35802469135802467,"prev":0.12992667277726855,"n":4364},{"e":1,"m":"Regresión logística","auc":0.6983353608320687,"lo":0.6771897684422591,"hi":0.7206210545547563,"ap":0.24301654542195278,"lift":2.0013050742336733,"rec":0.400352733686067,"prev":0.12992667277726855,"n":4364},{"e":1,"m":"Gradient boosting","auc":0.6985469360151125,"lo":0.676857148862131,"hi":0.7207354045853277,"ap":0.24632466714528606,"lift":2.0630193276241386,"rec":0.4126984126984127,"prev":0.12992667277726855,"n":4364},{"e":1,"m":"Random Forest","auc":0.6991361415468166,"lo":0.6773877713681422,"hi":0.7203675858840116,"ap":0.24529053004541365,"lift":1.9924887523207497,"rec":0.3985890652557319,"prev":0.12992667277726855,"n":4364},{"e":2,"m":"Solo sexo y edad (ref.)","auc":0.6772176508296814,"lo":0.6453983669964473,"hi":0.71315647881345,"ap":0.18572783909996615,"lift":1.8568527207787662,"rec":0.37155963302752293,"prev":0.1109979633401222,"n":1964},{"e":2,"m":"Regresión logística","auc":0.7023209012474122,"lo":0.6685613035802859,"hi":0.7391498906439713,"ap":0.2447251401061179,"lift":2.040245582090249,"rec":0.40825688073394495,"prev":0.1109979633401222,"n":1964},{"e":2,"m":"Gradient boosting","auc":0.7004503084376346,"lo":0.6657721435891418,"hi":0.734682310026585,"ap":0.22883669230338038,"lift":1.971473259098443,"rec":0.3944954128440367,"prev":0.1109979633401222,"n":1964},{"e":2,"m":"Random Forest","auc":0.6978966339838373,"lo":0.6653375426756832,"hi":0.7344203875074173,"ap":0.2493935179308638,"lift":2.0173214744263137,"rec":0.4036697247706422,"prev":0.1109979633401222,"n":1964}],"val":[{"y":"2019","auc":0.673},{"y":"2020","auc":0.637},{"y":"2021","auc":0.646},{"y":"2022","auc":0.692},{"y":"2023","auc":0.709},{"y":"2024","auc":0.705}],"imp":[{"v":"Ciclo vital","rf":0.0544,"gb":0.0739},{"v":"Edad (quinquenal)","rf":0.0408,"gb":0.0321},{"v":"Sexo","rf":0.0335,"gb":0.0241},{"v":"Mecanismo","rf":0.018,"gb":0.0252},{"v":"Pertenencia grupal","rf":0.006,"gb":0.0084},{"v":"Estado civil","rf":0.0046,"gb":0.0043},{"v":"Zona","rf":0.0035,"gb":0.0044},{"v":"Escenario","rf":0.0019,"gb":0.0086},{"v":"Departamento","rf":0.0016,"gb":0.001}],"perfil":{"Sexo":[{"c":"Hombre","p":15.2,"n":11411},{"c":"Mujer","p":7.4,"n":3053}],"Ciclo vital":[{"c":"Adolescencia (12–17)","p":2.3,"n":1179},{"c":"Juventud (18–28)","p":8.9,"n":4150},{"c":"Adultez (29–59)","p":17.5,"n":6645},{"c":"Adulto mayor (60+)","p":16.5,"n":2436}],"Edad (quinquenal)":[{"c":"10–14","p":1.7,"n":405},{"c":"15–17","p":2.6,"n":819},{"c":"18–19","p":6.6,"n":711},{"c":"20–24","p":8.3,"n":1985},{"c":"25–29","p":10.6,"n":1781},{"c":"30–34","p":11.0,"n":1409},{"c":"35–39","p":15.2,"n":1215},{"c":"40–44","p":18.3,"n":1011},{"c":"45–49","p":20.2,"n":933},{"c":"50–54","p":22.4,"n":901},{"c":"55–59","p":25.2,"n":849},{"c":"60–64","p":21.7,"n":743},{"c":"65–69","p":21.3,"n":609},{"c":"70–74","p":13.2,"n":454},{"c":"75–79","p":10.2,"n":295},{"c":"80+","p":6.6,"n":335}],"Estado civil":[{"c":"Casado/a","p":18.1,"n":2035},{"c":"Separado/divorciado","p":16.2,"n":727},{"c":"Sin información","p":14.5,"n":1144},{"c":"Soltero/a","p":10.3,"n":6495},{"c":"Unión libre","p":16.0,"n":3749},{"c":"Viudo/a","p":13.4,"n":305}],"Mecanismo":[{"c":"Contundente","p":7.8,"n":957},{"c":"Cortopunzante","p":6.5,"n":169},{"c":"Asfixia","p":15.1,"n":9311},{"c":"Arma de fuego","p":13.6,"n":1313},{"c":"Tóxico","p":10.9,"n":2382}],"Departamento":[{"c":"Caldas","p":18.2,"n":605},{"c":"Santander","p":16.5,"n":790},{"c":"Sucre","p":15.6,"n":430},{"c":"Atlántico","p":15.5,"n":537},{"c":"Boyacá","p":15.2,"n":480},{"c":"Valle del Cauca","p":15.2,"n":1094},{"c":"Cundinamarca","p":15.0,"n":686},{"c":"Caquetá","p":13.9,"n":151},{"c":"Huila","p":13.7,"n":446},{"c":"Bolívar","p":13.5,"n":445},{"c":"Arauca","p":13.2,"n":250},{"c":"Bogotá D.C.","p":13.2,"n":2000},{"c":"Risaralda","p":13.1,"n":496},{"c":"Antioquia","p":13.0,"n":2278},{"c":"Magdalena","p":12.9,"n":233},{"c":"La Guajira","p":12.7,"n":166},{"c":"Meta","p":12.6,"n":340},{"c":"Cesar","p":12.0,"n":451},{"c":"Nariño","p":11.9,"n":611},{"c":"Putumayo","p":11.3,"n":168},{"c":"Norte de Santander","p":10.8,"n":418},{"c":"Tolima","p":10.5,"n":458},{"c":"Cauca","p":8.7,"n":459}]},"cr":{"v":["Causa lab./econ.","Edad (quinquenal)","Ciclo vital","Sexo","Estado civil","Escenario","Mecanismo","Pertenencia grupal","Departamento","Escolaridad","Zona","Día de la semana","Mes","Hora","País de nacimiento"],"M":[[1.0,0.1898,0.1467,0.0926,0.09,0.077,0.0668,0.0574,0.0412,0.0343,0.0327,0.027,0.0074,0.0,0.0],[0.1898,1.0,0.8828,0.2058,0.4732,0.0313,0.0446,0.0422,0.0419,0.1058,0.0237,0.0235,0.0112,0.0414,0.0259],[0.1467,0.8828,1.0,0.1965,0.3314,0.0568,0.0761,0.0836,0.0728,0.1885,0.0,0.029,0.0067,0.0534,0.07],[0.0926,0.2058,0.1965,1.0,0.0544,0.0938,0.2032,0.0944,0.0804,0.0818,0.0301,0.0041,0.0205,0.0286,0.0169],[0.09,0.4732,0.3314,0.0544,1.0,0.0546,0.0553,0.0644,0.0901,0.196,0.0445,0.017,0.0117,0.0243,0.0873],[0.077,0.0313,0.0568,0.0938,0.0546,1.0,0.1069,0.1055,0.0426,0.0579,0.2054,0.0124,0.016,0.0354,0.0655],[0.0668,0.0446,0.0761,0.2032,0.0553,0.1069,1.0,0.0392,0.0727,0.0561,0.1063,0.0,0.014,0.0274,0.0219],[0.0574,0.0422,0.0836,0.0944,0.0644,0.1055,0.0392,1.0,0.0942,0.0987,0.1892,0.0,0.0327,0.0484,0.0414],[0.0412,0.0419,0.0728,0.0804,0.0901,0.0426,0.0727,0.0942,1.0,0.0723,0.2333,0.03,0.0237,0.131,0.0189],[0.0343,0.1058,0.1885,0.0818,0.196,0.0579,0.0561,0.0987,0.0723,1.0,0.1238,0.0206,0.0183,0.0362,0.0426],[0.0327,0.0237,0.0,0.0301,0.0445,0.2054,0.1063,0.1892,0.2333,0.1238,1.0,0.0,0.0,0.0411,0.0],[0.027,0.0235,0.029,0.0041,0.017,0.0124,0.0,0.0,0.03,0.0206,0.0,1.0,0.3777,0.0148,0.0106],[0.0074,0.0112,0.0067,0.0205,0.0117,0.016,0.014,0.0327,0.0237,0.0183,0.0,0.3777,1.0,0.0062,0.0],[0.0,0.0414,0.0534,0.0286,0.0243,0.0354,0.0274,0.0484,0.131,0.0362,0.0411,0.0148,0.0062,1.0,0.026],[0.0,0.0259,0.07,0.0169,0.0873,0.0655,0.0219,0.0414,0.0189,0.0426,0.0,0.0106,0.0,0.026,1.0]]},"spear":[{"k":"tgp","l":"Participación (TGP)","a":0.221,"b":0.015,"c":0.057,"d":0.052},{"k":"to","l":"Ocupación (TO)","a":0.242,"b":0.038,"c":0.058,"d":0.038},{"k":"td","l":"Desocupación (TD)","a":-0.181,"b":-0.055,"c":-0.037,"d":0.033},{"k":"ts","l":"Subocupación (TS)","a":0.04,"b":0.049,"c":-0.021,"d":0.069}],"forest":[{"e":"Etapa 1 · 2022-2024","d":-0.00847,"lo":-0.018636,"hi":0.001536,"a":0.705,"b":0.696},{"e":"Etapa 2 · 2025-2026","d":-0.016064,"lo":-0.029829,"hi":-0.002762,"a":0.701,"b":0.685}],"panel":{"solo_empleo":-0.044,"base":0.256}};
+        const smF = (x, d = 3) => x.toFixed(d).replace('.', ',').replace('-', '−');
+        let smValC, smImpC, smPerfC;
+
+        function initSismel() {
+            const steps = [['database','Carga y armonización','2 bloques INMLCF'],['tags','Definición de clase','1 laboral/econ. · 0 otra'],['cpu','Entrenamiento','4 modelos'],['calendar-range','Etapa 1','Prueba 2022–2024'],['calendar-check','Etapa 2','Prueba final 2025–2026']];
+            document.getElementById('sm-steps').innerHTML = steps.map((s, i) => `<div class="flex items-center gap-2"><span class="p-1.5 bg-amber-100 rounded-full text-amber-900"><i data-lucide="${s[0]}" class="w-3.5 h-3.5"></i></span><div><p class="text-[9px] font-mono uppercase text-textMuted">Paso ${i + 1}</p><p class="font-semibold text-textDark leading-tight">${s[1]}</p><p class="text-[10px] text-textMuted">${s[2]}</p></div></div>`).join('');
+
+            const f2 = SISMEL.mods.filter(m => m.e === 2), best = f2.slice(1).sort((a, b) => b.auc - a.auc)[0];
+            const kp = [['users','Universo de casos','30.932','INMLCF 2015–2026 · 14.464 con causa conocida',0],
+                ['bar-chart-3','ROC-AUC',smF(best.auc),`Prueba final 2025–2026 · IC 95 % ${smF(best.lo)}–${smF(best.hi)}`,1],
+                ['trending-up','Factor de elevación',smF(best.lift, 2) + '×','Lift@20 % de la población priorizada',0],
+                ['trophy','Mejor AUC',best.m.replace('Regresión logística','Reg. logística'),'GB y RF quedan a ≤ 0,004: empate técnico',0]];
+            document.getElementById('sm-kpis').innerHTML = kp.map(k => `<div class="card-editorial p-4 space-y-1 ${k[4] ? '!bg-burgundy !border-burgundy text-white' : ''}"><div class="flex justify-between text-[11px] ${k[4] ? 'text-white/80' : 'text-textMuted'}"><span>${k[1]}</span><i data-lucide="${k[0]}" class="w-4 h-4"></i></div><p class="font-mono font-bold ${k[2].length > 8 ? 'text-lg' : 'text-3xl'} ${k[4] ? 'text-white' : 'text-textDark'}">${k[2]}</p><p class="text-[10px] ${k[4] ? 'text-white/80' : 'text-textMuted'}">${k[3]}</p></div>`).join('');
+
+            document.querySelectorAll('#sm-stage-toggle button').forEach(b => b.onclick = () => smStage(+b.dataset.s));
+            smStage(2);
+
+            smValC = new Chart(document.getElementById('smValChart'), { type: 'line',
+                data: { labels: SISMEL.val.map(v => v.y), datasets: [{ label: 'AUC', data: SISMEL.val.map(v => v.auc), borderColor: '#9b2c2c', backgroundColor: '#9b2c2c', tension: .3, borderWidth: 2.5, pointRadius: 4 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { min: 0.5, max: 0.8, grid: { color: '#eee8dc' } }, x: { grid: { display: false } } } } });
+
+            const cols = ['#7f1d1d','#9b2c2c','#b91c1c','#b45309','#92400e','#78350f','#a8a29e','#a8a29e','#a8a29e'];
+            smImpC = new Chart(document.getElementById('smImpChart'), { type: 'bar',
+                data: { labels: SISMEL.imp.map(i => i.v), datasets: [{ label: 'Random Forest', data: SISMEL.imp.map(i => i.rf), backgroundColor: cols, borderRadius: 4 }, { label: 'Gradient boosting', data: SISMEL.imp.map(i => i.gb), backgroundColor: 'rgba(28,25,23,.18)', borderRadius: 4 }] },
+                options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { font: { size: 10 }, generateLabels: () => [{ text: 'Random Forest', fillStyle: '#9b2c2c' }, { text: 'Gradient boosting', fillStyle: 'rgba(28,25,23,.18)' }] } }, tooltip: { callbacks: { label: c => `${c.dataset.label}: −${smF(c.raw)} AUC` } } }, scales: { x: { grid: { color: '#eee8dc' }, title: { display: true, text: 'Δ ROC-AUC', font: { size: 10 } } }, y: { grid: { display: false }, ticks: { font: { size: 10 } } } } } });
+
+            const sel = document.getElementById('sm-perfil-select');
+            sel.innerHTML = Object.keys(SISMEL.perfil).filter(k => k !== 'Sexo').map(k => `<option>${k}</option>`).join('');
+            sel.onchange = () => smPerfil(sel.value);
+            sel.value = 'Edad (quinquenal)';
+            const sx = SISMEL.perfil['Sexo'], h = sx[0], m = sx[1];
+            document.getElementById('sm-sex').innerHTML = `<div class="rounded-xl p-3 bg-amber-100 border border-amber-200"><div class="flex justify-between text-xs font-semibold text-amber-900"><span>♂ Hombres</span><span class="text-[10px] text-burgundy">${(h.p / m.p).toFixed(1).replace('.', ',')}× mayor</span></div><p class="font-mono font-bold text-2xl text-textDark">${smF(h.p, 1)} %</p></div><div class="rounded-xl p-3 bg-[#eee9df] border border-[#e2dacd]"><span class="text-xs font-semibold text-textDark">♀ Mujeres</span><p class="font-mono font-bold text-2xl text-textDark">${smF(m.p, 1)} %</p></div>`;
+            smPerfil('Edad (quinquenal)');
+
+            // Matriz de Cramér
+            const C = SISMEL.cr, n = C.v.length;
+            let t = `<div style="display:grid;grid-template-columns:110px repeat(${n},minmax(26px,1fr));gap:2px;font-size:9px"><div></div>` + C.v.map(v => `<div class="text-textMuted text-center" style="writing-mode:vertical-rl;transform:rotate(180deg);height:78px;justify-self:center">${v}</div>`).join('');
+            C.M.forEach((r, i) => { t += `<div class="text-textDark font-semibold self-center truncate" title="${C.v[i]}">${C.v[i]}</div>` + r.map((x, j) => i === j ? `<div class="rounded bg-[#eee9df] h-7"></div>` : `<div class="rounded h-7 flex items-center justify-center font-mono ${x > .45 ? 'text-white' : 'text-textDark'}" style="background:rgba(155,44,44,${Math.min(1, x * 1.15 + .04).toFixed(2)})" title="${C.v[i]} ~ ${C.v[j]}: ${smF(x)}">${x >= .1 ? smF(x, 2) : ''}</div>`).join(''); });
+            document.getElementById('sm-cramer').innerHTML = t + '</div>';
+
+            // Empleo: Spearman y Δ AUC
+            document.getElementById('sm-spear').innerHTML = SISMEL.spear.map(r => `<tr class="border-b border-[#f2ece0]"><td class="py-1.5 font-semibold text-textDark">${r.l}</td>` + [r.a, r.b, r.c, r.d].map(x => `<td class="text-right font-mono px-1 ${Math.abs(x) >= .15 ? 'bg-amber-100 text-amber-900 font-bold' : 'text-textMuted'}">${(x > 0 ? '+' : '') + smF(x)}</td>`).join('') + '</tr>').join('');
+            const pos = x => ((x + 0.04) / 0.06 * 100).toFixed(1);
+            document.getElementById('sm-forest').innerHTML = SISMEL.forest.map(f => `<div><div class="flex justify-between text-[10px]"><span class="font-semibold text-textDark">${f.e}</span><span class="font-mono text-textMuted">${smF(f.d)} [${smF(f.lo)}; ${smF(f.hi)}]</span></div><div class="relative h-6"><div class="absolute top-0 bottom-0 w-px bg-[#686259]" style="left:${pos(0)}%"></div><div class="absolute top-1/2 h-0.5 bg-burgundy" style="left:${pos(f.lo)}%;width:${pos(f.hi) - pos(f.lo)}%"></div><div class="absolute top-1/2 w-3 h-3 -mt-1.5 -ml-1.5 rounded-full bg-burgundy border-2 border-white" style="left:${pos(f.d)}%"></div></div><p class="text-[10px] text-textMuted">AUC solo perfil ${smF(f.a)} → perfil + empleo ${smF(f.b)}</p></div>`).join('') + '<p class="text-[10px] text-textMuted flex justify-between"><span>← empeora</span><span>0 = sin cambio</span><span>mejora →</span></p>';
+            document.getElementById('sm-panel').innerHTML = `Panel departamento-trimestre: un Random Forest con solo empleo obtiene R² = <strong class="font-mono">${smF(SISMEL.panel.solo_empleo)}</strong>, peor que el promedio histórico del departamento (R² = <strong class="font-mono">${smF(SISMEL.panel.base)}</strong>).`;
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function smStage(s) {
+            document.querySelectorAll('#sm-stage-toggle button').forEach(b => b.className = 'px-3 py-1 rounded-lg ' + (+b.dataset.s === s ? 'bg-white shadow text-textDark' : 'text-textMuted'));
+            const rows = SISMEL.mods.filter(m => m.e === s), mx = Math.max(...rows.map(r => r.auc));
+            document.getElementById('sm-model-body').innerHTML = rows.map(r => `<tr class="border-b border-[#f2ece0] ${r.auc === mx ? 'bg-amber-50' : ''}"><td class="py-2 font-semibold text-textDark">${r.m}</td><td><div class="flex items-center gap-2"><span class="font-mono font-bold w-10">${smF(r.auc)}</span><div class="w-20 h-1.5 rounded-full bg-[#eee9df] overflow-hidden"><div class="h-1.5 bg-burgundy" style="width:${((r.auc - .5) / .3 * 100).toFixed(0)}%"></div></div><span class="text-[10px] text-textMuted font-mono">${smF(r.lo)}–${smF(r.hi)}</span></div></td><td class="text-right font-mono">${smF(r.ap)}</td><td class="text-right font-mono">${smF(r.lift, 2)}×</td><td class="text-right font-mono">${smF(r.rec * 100, 1)} %</td></tr>`).join('');
+            document.getElementById('sm-ref').textContent = `n de prueba = ${rows[0].n.toLocaleString('es-CO')} · Referencia: azar = AUC 0,500, AP ${smF(rows[0].prev)}, lift 1,00. Etapa ${s === 1 ? '1: entrena 2015–2021' : '2: entrena 2015–2024, sin ajustar nada'}.`;
+        }
+
+        function smPerfil(k) {
+            const d = SISMEL.perfil[k], horiz = d.length > 7 || k === 'Departamento', wrap = document.getElementById('sm-perfil-wrap');
+            wrap.style.height = wrap.style.minHeight = (horiz ? Math.max(260, d.length * 20 + 30) : 260) + 'px';
+            if (smPerfC) smPerfC.destroy();
+            smPerfC = new Chart(document.getElementById('smPerfilChart'), { type: 'bar',
+                data: { labels: d.map(x => x.c), datasets: [{ data: d.map(x => x.p), backgroundColor: d.map(x => x.p >= 13.6 ? '#9b2c2c' : '#e6c3c3'), borderRadius: 4 }] },
+                options: { indexAxis: horiz ? 'y' : 'x', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => `${smF(c.raw, 1)} % de ${d[c.dataIndex].n.toLocaleString('es-CO')} casos` } } }, scales: { [horiz ? 'x' : 'y']: { grid: { color: '#eee8dc' }, ticks: { callback: v => v + '%', font: { size: 9 } } }, [horiz ? 'y' : 'x']: { grid: { display: false }, ticks: { font: { size: 9 } } } } } });
         }
 
         function setActiveNav(el) {
