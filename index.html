@@ -259,45 +259,133 @@
             </section>
 
             <!-- MÓDULO 01 -->
-            <section id="clustering" class="space-y-4 pt-6 border-t border-[#e8e2d5]">
-                <div class="space-y-1">
-                    <p class="text-[10px] font-bold text-burgundy uppercase tracking-widest">MÓDULO 01 · CRISP-DM GEIH</p>
-                    <h2 class="font-serif font-bold text-2xl text-textDark">Diagnóstico territorial & clustering</h2>
-                    <p class="text-xs text-textMuted">K-Means (k=3) sobre indicadores estandarizados de ocupación, desempleo, informalidad y formalidad asalariada.</p>
+ <section id="clustering" class="space-y-4 pt-6 border-t border-[#e8e2d5]">
+    <div class="space-y-1">
+        <p class="text-[10px] font-bold text-burgundy uppercase tracking-widest">MÓDULO 01 · CRISP-DM GEIH</p>
+        <h2 class="font-serif font-bold text-2xl text-textDark">Diagnóstico territorial & clustering</h2>
+        <p class="text-xs text-textMuted">K-Means (k=3) sobre indicadores estandarizados de ocupación, desempleo, informalidad y formalidad asalariada.</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+        <!-- Panel Izquierdo: Información del Clúster -->
+        <div class="lg:col-span-6 card-editorial p-5 space-y-6 flex flex-col justify-between">
+            
+            <div class="space-y-4" id="cluster-detail-box">
+                <!-- Selector de Clústeres -->
+                <div class="flex space-x-3 text-sm text-textMuted font-medium mb-2">
+                    <button class="flex items-center space-x-2 px-3 py-1 bg-white shadow-sm rounded-full border border-gray-200">
+                        <span class="w-3 h-3 rounded-full bg-gray-400"></span><span class="text-textDark font-bold">Clúster 0</span>
+                    </button>
+                    <button class="flex items-center space-x-2 px-3 py-1 hover:bg-gray-50 rounded-full transition-colors">
+                        <span class="w-3 h-3 rounded-full bg-[#8a2a2b]"></span><span>Clúster 1</span>
+                    </button>
+                    <button class="flex items-center space-x-2 px-3 py-1 hover:bg-gray-50 rounded-full transition-colors">
+                        <span class="w-3 h-3 rounded-full bg-[#b85a24]"></span><span>Clúster 2</span>
+                    </button>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-                    <div class="lg:col-span-6 card-editorial p-5 space-y-4 flex flex-col justify-between">
-                        <div class="space-y-3" id="cluster-detail-box">
-                        </div>
-
-                        <div class="bg-amber-50/80 p-4 rounded-xl border border-amber-200/80 space-y-2" id="paradox-box">
-                        </div>
+                <!-- Cabecera del Clúster Activo -->
+                <div class="space-y-2">
+                    <div class="flex items-center space-x-2 text-[10px] font-bold text-textMuted tracking-widest uppercase">
+                        <span class="w-3 h-3 rounded-full bg-gray-400"></span>
+                        <span>Clúster 0 • 7 Ciudades</span>
                     </div>
+                    <h3 class="text-2xl font-serif text-textDark leading-tight">Formales / Consolidados</h3>
+                    <p class="text-sm text-textMuted leading-relaxed">
+                        Mercados con mayor proporción de asalariados formales, cobertura de seguridad social y menor dependencia del trabajo por cuenta propia. Absorben mejor los choques.
+                    </p>
+                </div>
 
-                    <div class="lg:col-span-6 card-editorial p-5 space-y-3 flex flex-col justify-between">
+                <!-- Grilla de Promedios -->
+                <div class="grid grid-cols-4 gap-2 pt-2">
+                    <div class="bg-gray-50/80 p-3 text-center rounded border border-gray-100">
+                        <div class="font-bold text-textDark text-lg">57,7%</div>
+                        <div class="text-[9px] text-textMuted uppercase tracking-wide mt-1">TO Prom.</div>
+                    </div>
+                    <div class="bg-gray-50/80 p-3 text-center rounded border border-gray-100">
+                        <div class="font-bold text-textDark text-lg">9,5%</div>
+                        <div class="text-[9px] text-textMuted uppercase tracking-wide mt-1">TD Prom.</div>
+                    </div>
+                    <div class="bg-gray-50/80 p-3 text-center rounded border border-gray-100">
+                        <div class="font-bold text-textDark text-lg">40,5%</div>
+                        <div class="text-[9px] text-textMuted uppercase tracking-wide mt-1">Precar. Prom.</div>
+                    </div>
+                    <div class="bg-gray-50/80 p-3 text-center rounded border border-gray-100">
+                        <div class="font-bold text-textDark text-lg">49,6%</div>
+                        <div class="text-[9px] text-textMuted uppercase tracking-wide mt-1">Formal Prom.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contenedor Dinámico: Ciudades OR Paradoja -->
+            <div id="dynamic-footer-box" class="pt-2">
+                
+                <!-- ESTADO A: Vista de Ciudades (Mostrar cuando NO es Pasto) -->
+                <!-- Nota: Quita la clase 'hidden' vía JS cuando aplique -->
+                <div id="cities-box" class="space-y-3">
+                    <h4 class="text-[10px] text-textMuted font-bold uppercase tracking-widest">
+                        Ciudades del Clúster
+                    </h4>
+                    <div class="flex flex-wrap gap-2">
+                        <button class="px-3 py-1.5 rounded-full border border-gray-200 text-xs text-textDark bg-white hover:bg-gray-50">Bogotá</button>
+                        <button class="px-3 py-1.5 rounded-full border border-gray-200 text-xs text-textDark bg-white hover:bg-gray-50">Medellín</button>
+                        <button class="px-3 py-1.5 rounded-full border border-gray-200 text-xs text-textDark bg-white hover:bg-gray-50">Cali</button>
+                        <button class="px-3 py-1.5 rounded-full border border-[#8a2a2b] text-xs text-white bg-[#8a2a2b] font-medium shadow-sm">Manizales</button>
+                        <button class="px-3 py-1.5 rounded-full border border-gray-200 text-xs text-textDark bg-white hover:bg-gray-50">Bucaramanga</button>
+                        <button class="px-3 py-1.5 rounded-full border border-gray-200 text-xs text-textDark bg-white hover:bg-gray-50">Tunja</button>
+                        <button class="px-3 py-1.5 rounded-full border border-gray-200 text-xs text-textDark bg-white hover:bg-gray-50">Pereira</button>
+                    </div>
+                </div>
+
+                <!-- ESTADO B: Paradoja de Pasto (Mostrar SÓLO cuando es Pasto) -->
+                <!-- Nota: Añade la clase 'hidden' vía JS cuando se seleccione otra ciudad -->
+                <div id="paradox-box" class="bg-[#fdf9f1] p-5 rounded-xl border border-[#eaddbc] space-y-3 hidden">
+                    <div class="flex items-center space-x-2 text-[#9a762e] text-xs font-bold tracking-wider uppercase">
+                        <span>⚖️</span>
+                        <span>La paradoja ocupacional de Pasto</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <div class="flex items-center justify-between mb-1">
-                                <h3 class="font-bold text-sm text-textDark">Proyección PCA de las 23 ciudades</h3>
-                                <span class="text-[10px] text-textMuted font-medium">Varianza explicada: Dim 1 = 58,4% · Dim 2 = 24,1%</span>
-                            </div>
-                            <div class="flex gap-3 text-[10px] text-textMuted mb-2">
-                                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-600"></span> Formales</span>
-                                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-rose-600"></span> Precarización Extrema</span>
-                                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-amber-600"></span> Informalidad Urbana</span>
-                            </div>
+                            <div class="text-2xl font-bold text-textDark">62,68%</div>
+                            <div class="text-xs text-textMuted leading-tight mt-1">ocupación · la más alta de 23</div>
                         </div>
-
-                        <div class="chart-container my-auto">
-                            <canvas id="pcaChart"></canvas>
+                        <div>
+                            <div class="text-2xl font-bold text-[#a04a1f]">46,76%</div>
+                            <div class="text-xs text-textMuted leading-tight mt-1">en precarización e informalidad</div>
                         </div>
-
-                        <p class="text-[10px] text-textMuted text-center mt-2">
-                            → <strong>Dim 1 · Formalidad:</strong> asalariados formales &nbsp;&nbsp;|&nbsp;&nbsp; ↑ <strong>Dim 2 · Dinamismo:</strong> tasa de ocupación
-                        </p>
                     </div>
+                    <p class="text-xs text-textDark leading-relaxed">
+                        La alta ocupación no refleja un mercado robusto: está impulsada por la <strong>necesidad de generar ingresos</strong>. Casi la mitad de quienes trabajan lo hacen en la precariedad.
+                    </p>
                 </div>
-            </section>
+
+            </div>
+        </div>
+
+        <!-- Panel Derecho: Gráfico PCA -->
+        <div class="lg:col-span-6 card-editorial p-5 space-y-3 flex flex-col justify-between">
+            <div>
+                <div class="flex items-center justify-between mb-1">
+                    <h3 class="font-bold text-sm text-textDark">Proyección PCA de las 23 ciudades</h3>
+                    <span class="text-[10px] text-textMuted font-medium">Varianza explicada: Dim 1 = 58,4% · Dim 2 = 24,1%</span>
+                </div>
+                <div class="flex gap-3 text-[10px] text-textMuted mb-2">
+                    <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-gray-500"></span> Formales</span>
+                    <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#8a2a2b]"></span> Precarización Extrema</span>
+                    <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#b85a24]"></span> Informalidad Urbana</span>
+                </div>
+            </div>
+
+            <div class="chart-container my-auto">
+                <canvas id="pcaChart"></canvas>
+            </div>
+
+            <p class="text-[10px] text-textMuted text-center mt-2">
+                → <strong>Dim 1 · Formalidad:</strong> asalariados formales &nbsp;&nbsp;|&nbsp;&nbsp; ↑ <strong>Dim 2 · Dinamismo:</strong> tasa de ocupación
+            </p>
+        </div>
+    </div>
+</section>
 
             <!-- MÓDULO 02 -->
             <section id="mapa" class="space-y-4 pt-6 border-t border-[#e8e2d5]">
