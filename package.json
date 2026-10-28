@@ -1,0 +1,20 @@
+{
+  "name": "observatorio-salud-mental-laboral",
+  "version": "1.0.0",
+  "description": "Observatorio del Mercado Laboral y Salud Mental en Colombia (Foco Pasto y 23 Ciudades)",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve ."
+  },
+  "keywords": [
+    "observatorio",
+    "salud-mental",
+    "geih",
+    "dane",
+    "inmlcf",
+    "sismel",
+    "pasto"
+  ],
+  "author": "Cata Pusapas",
+  "license": "MIT"
+}
