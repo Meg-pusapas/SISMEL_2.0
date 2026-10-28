@@ -101,10 +101,18 @@
             opacity: 0;
             pointer-events: none;
         }
+        html { scroll-padding-top: 9rem; }
+        @media (max-width: 1023px) {
+            #sidebar { position: fixed; top: 0; bottom: 0; left: 0; width: 18rem; max-width: 85vw; height: 100vh; transform: translateX(-100%); overflow-y: auto; z-index: 50; margin-left: 0 !important; opacity: 1 !important; pointer-events: auto !important; transition: transform .3s ease; }
+            #sidebar.mobile-open { transform: none; }
+            #sidebar-backdrop { display: none; position: fixed; inset: 0; background: rgba(28,25,23,.45); z-index: 40; }
+            #sidebar-backdrop.show { display: block; }
+        }
     </style>
 </head>
 <body class="flex flex-col lg:flex-row min-h-screen overflow-x-hidden">
 
+    <div id="sidebar-backdrop" onclick="toggleSidebar()"></div>
     <!-- SIDEBAR NAVIGATION -->
     <aside id="sidebar" class="w-full lg:w-72 bg-sidebarBg border-r border-[#e2dacd] p-5 flex flex-col justify-between shrink-0 fixed lg:sticky top-0 lg:h-screen z-30 shadow-lg lg:shadow-none">
         <div class="space-y-6">
@@ -146,6 +154,9 @@
                 <a href="#matriz" class="nav-item" onclick="setActiveNav(this)">
                     <i data-lucide="table" class="w-4 h-4"></i> 6 · Matriz de datos
                 </a>
+                <a href="#metodologia" class="nav-item" onclick="setActiveNav(this)">
+                    <i data-lucide="book-open" class="w-4 h-4"></i> Metodología
+                </a>
             </nav>
         </div>
 
@@ -155,39 +166,41 @@
                 <span class="bg-warmYellow text-warmYellowDark px-2 py-0.5 rounded text-[10px] font-semibold">23 Ciudades</span>
             </div>
             <p class="text-[10px] leading-tight">GEIH-DANE · INMLCF 2015–2026 · Modelo SISMEL</p>
+            <p class="text-[10px] leading-tight">Actualizado: <span id="meta-fecha-side">—</span></p>
         </div>
     </aside>
 
     <!-- MAIN CONTENT -->
     <div class="flex-1 flex flex-col min-w-0 transition-all duration-300">
 
+        <div class="sticky top-0 z-30">
         <!-- Top Hotline Banner -->
         <div class="bg-warmYellow border-b border-[#f3e4b7] px-4 py-2.5 flex flex-wrap items-center justify-between gap-2 text-xs text-warmYellowDark">
             <div class="flex items-center gap-2 font-medium">
                 <i data-lucide="heart" class="w-4 h-4 text-burgundy fill-burgundy"></i>
-                <span>Si tú o alguien cercano está pasando por un momento difícil, hay apoyo disponible.</span>
+                <span class="hidden sm:inline">Si tú o alguien cercano está pasando por un momento difícil, hay apoyo disponible.</span><span class="sm:hidden">¿Necesitas apoyo? Llama gratis 24/7</span>
             </div>
             <div class="flex items-center gap-2 font-bold">
                 <span class="bg-burgundy text-white px-2.5 py-0.5 rounded-md text-[11px]">Nariño 106</span>
                 <span class="bg-amber-100 border border-amber-300 text-amber-900 px-2.5 py-0.5 rounded-md text-[11px]">Nacional 106 · 192</span>
-                <span class="text-[10px] text-amber-800 font-normal">Gratuitas · 24/7</span>
+                <span class="hidden sm:inline text-[10px] text-amber-800 font-normal">Gratuitas · 24/7</span>
             </div>
         </div>
 
         <!-- Header Controls Bar -->
-        <header class="bg-creamBg border-b border-[#e8e2d5] px-6 py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sticky top-0 z-20 shadow-sm">
+        <header class="bg-creamBg border-b border-[#e8e2d5] px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-sm">
             <div class="flex items-center gap-3">
                 <button onclick="toggleSidebar()" class="p-2 bg-sidebarBg hover:bg-[#e2dacd] rounded-xl text-textDark border border-[#d6cdbd] transition-colors flex items-center justify-center" title="Ocultar / Mostrar menú">
                     <i data-lucide="panel-left" class="w-5 h-5 text-burgundy"></i>
                 </button>
                 <div>
-                    <p class="text-[10px] font-bold uppercase tracking-widest text-burgundy">OBSERVATORIO · COLOMBIA</p>
+                    <p class="hidden sm:block text-[10px] font-bold uppercase tracking-widest text-burgundy">OBSERVATORIO · COLOMBIA</p>
                     <h2 class="font-serif font-bold text-xl text-textDark">Mercado Laboral & Salud Mental</h2>
                 </div>
             </div>
 
-            <div class="flex items-center gap-2 self-end sm:self-auto">
-                <span class="text-xs font-medium text-textMuted">Ciudad en foco:</span>
+            <div class="flex items-center gap-2 self-start sm:self-auto">
+                <span class="hidden sm:inline text-xs font-medium text-textMuted">Ciudad en foco:</span>
                 <div class="relative">
                     <select id="city-select" class="bg-white border border-[#d6cdbd] rounded-xl px-3.5 py-2 pr-8 text-xs font-bold text-textDark shadow-sm outline-none focus:border-burgundy appearance-none cursor-pointer">
                     </select>
@@ -198,6 +211,7 @@
                 </button>
             </div>
         </header>
+        </div>
 
         <main class="p-6 max-w-7xl mx-auto w-full space-y-10">
 
@@ -235,7 +249,7 @@
 
                 <div class="space-y-2">
                     <div class="flex justify-between items-center">
-                        <span class="text-xs font-bold text-textDark">Indicadores de <span id="kpi-city-title" class="text-burgundy">Pasto</span> vs. promedio 23 ciudades</span>
+                        <span class="text-xs font-bold text-textDark">Indicadores de <span id="kpi-city-title" class="text-burgundy">Pasto</span> vs. promedio simple de las 23 ciudades</span>
                         <span id="cluster-badge-header" class="badge-pill bg-amber-100 text-amber-900 border border-amber-300">Clúster 2 · Informalidad Urbana</span>
                     </div>
 
@@ -313,7 +327,7 @@
 
                         <div class="flex items-center justify-between text-[11px] text-textMuted pt-1">
                             <span>Concentración geográfica de casos reportados en Medicina Legal.</span>
-                            <span class="font-bold text-burgundy">Foco: Pasto (62 casos econ./laboral)</span>
+                            <span id="map-focus" class="font-bold text-burgundy">Foco: Pasto</span>
                         </div>
                     </div>
 
@@ -336,7 +350,7 @@
             <!-- MÓDULO 03 -->
             <section id="evolucion" class="space-y-4 pt-6 border-t border-[#e8e2d5]">
                 <div class="space-y-1">
-                    <p class="text-[10px] font-bold text-burgundy uppercase tracking-widest">MÓDULO 03 · SERIE 2015–2026</p>
+                    <p class="text-[10px] font-bold text-burgundy uppercase tracking-widest">MÓDULO 03 · SERIE 2015–2026 (2026 PARCIAL)</p>
                     <h2 class="font-serif font-bold text-2xl text-textDark">Evolución temporal multivariable · <span id="combo-city-name" class="italic text-burgundy">Pasto</span></h2>
                     <p class="text-xs text-textMuted">Suicidios registrados (columnas) frente a indicadores laborales (líneas, eje derecho en %).</p>
                 </div>
@@ -345,6 +359,7 @@
                     <div class="chart-container min-h-[320px]">
                         <canvas id="comboEvolucionChart"></canvas>
                     </div>
+                    <p class="text-[11px] text-textMuted">* <strong>2026 es un año parcial:</strong> suicidios de enero a julio (INMLCF) y trimestre móvil may–jul (GEIH). No es comparable con años completos; por eso su barra es más clara y su tramo de línea, punteado.</p>
 
                     <div class="p-3 bg-[#f5f0e6] rounded-xl border border-[#e8e2d5] text-xs text-textMuted flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                         <span><strong>Lectura multivariable:</strong> Permite evaluar si los picos en desocupación o precarización preceden temporalmente a los incrementos en conductas autoinfligidas.</span>
@@ -500,11 +515,11 @@
             </section>
 
             <!-- MÓDULO 06 -->
-            <section id="matriz" class="space-y-4 pt-6 border-t border-[#e8e2d5] pb-12">
+            <section id="matriz" class="space-y-4 pt-6 border-t border-[#e8e2d5]">
                 <div class="space-y-1">
                     <p class="text-[10px] font-bold text-burgundy uppercase tracking-widest">MÓDULO 06 · 23 CIUDADES</p>
                     <h2 class="font-serif font-bold text-2xl text-textDark">Matriz de datos completa</h2>
-                    <p class="text-xs text-textMuted">Haz clic en una fila para sincronizar todos los módulos con esa ciudad.</p>
+                    <p class="text-xs text-textMuted">Haz clic en una fila para sincronizar todos los módulos con esa ciudad. <a href="#metodologia" class="text-burgundy font-semibold underline">Metodología y descarga</a></p>
                 </div>
 
                 <div class="card-editorial p-5 space-y-4">
@@ -540,6 +555,31 @@
                             </tbody>
                         </table>
                     </div>
+                </div>
+            </section>
+
+            <!-- METODOLOGÍA -->
+            <section id="metodologia" class="space-y-4 pt-6 border-t border-[#e8e2d5] pb-12">
+                <div class="space-y-1">
+                    <p class="text-[10px] font-bold text-burgundy uppercase tracking-widest font-mono">METODOLOGÍA · FUENTES · LIMITACIONES</p>
+                    <h2 class="font-serif font-bold text-2xl text-textDark">Cómo se construyó este observatorio</h2>
+                    <p class="text-xs text-textMuted">Última actualización: <strong id="meta-fecha" class="text-textDark">—</strong> · GEIH hasta may–jul 2026 · INMLCF hasta julio de 2026</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-textMuted leading-relaxed">
+                    <div class="card-editorial p-5 space-y-2"><h3 class="font-bold text-sm text-textDark flex items-center gap-2"><i data-lucide="database" class="w-4 h-4 text-burgundy"></i> Fuentes</h3>
+                        <p><strong class="text-textDark">GEIH · DANE:</strong> 23 ciudades y áreas metropolitanas, trimestres móviles (serie 2007–2026; último periodo may–jul 2026).</p>
+                        <p><strong class="text-textDark">INMLCF · Medicina Legal:</strong> presuntos suicidios en Colombia 2015–2026, cifras definitivas (2026 cubre enero–julio).</p></div>
+                    <div class="card-editorial p-5 space-y-2"><h3 class="font-bold text-sm text-textDark flex items-center gap-2"><i data-lucide="cpu" class="w-4 h-4 text-burgundy"></i> Métodos</h3>
+                        <p><strong class="text-textDark">Clustering:</strong> PCA a 2 componentes y K-Means (k = 3) sobre indicadores estandarizados; silhouette 0,256.</p>
+                        <p><strong class="text-textDark">SISMEL:</strong> partición temporal sin mezclar años (entrena 2015–2021 → prueba 2022–2024; reentrena 2015–2024 → prueba final 2025–2026), 4 modelos, AUC con IC 95 % por bootstrap. Asociaciones con V de Cramér y Spearman.</p></div>
+                    <div class="card-editorial p-5 space-y-2 bg-amber-50/60 border-amber-200/80"><h3 class="font-bold text-sm text-textDark flex items-center gap-2"><i data-lucide="scale" class="w-4 h-4 text-burgundy"></i> Limitaciones</h3>
+                        <ul class="list-disc pl-4 space-y-1"><li>El 53,2 % de los suicidios (16.468 de 30.932) no tiene causa registrada; las comparaciones regionales son aproximadas.</li>
+                        <li>2026 es un año parcial (enero–julio): no es comparable con años completos.</li>
+                        <li>El «promedio de 23 ciudades» es un promedio simple, sin ponderar por población.</li>
+                        <li>Los resultados son asociativos, no causales. El modelo describe perfiles en datos agregados; no evalúa el riesgo de una persona.</li></ul></div>
+                    <div class="card-editorial p-5 space-y-3"><h3 class="font-bold text-sm text-textDark flex items-center gap-2"><i data-lucide="download" class="w-4 h-4 text-burgundy"></i> Datos y apoyo</h3>
+                        <div class="flex flex-wrap gap-2"><button onclick="downloadMatrix()" class="bg-burgundy text-white font-semibold px-3 py-2 rounded-xl hover:bg-burgundy-hover">⬇ 23 ciudades (CSV)</button><button onclick="downloadCity()" class="bg-[#eee9df] text-textDark font-semibold px-3 py-2 rounded-xl hover:bg-[#e2dacd]">⬇ Serie de la ciudad en foco (CSV)</button></div>
+                        <p>Si tú o alguien cercano está pasando por un momento difícil: Línea 106 (Nariño) · 106 y 192 a nivel nacional, gratuitas, 24/7.</p></div>
                 </div>
             </section>
 
@@ -955,7 +995,10 @@
 
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('collapsed');
+            if (window.innerWidth < 1024) {
+                sidebar.classList.toggle('mobile-open');
+                document.getElementById('sidebar-backdrop').classList.toggle('show', sidebar.classList.contains('mobile-open'));
+            } else { sidebar.classList.toggle('collapsed'); }
             
             setTimeout(() => {
                 if (mapInstance) {
@@ -977,6 +1020,8 @@
             safeRun('grafico PCA', () => { if (window.Chart) initPcaChart(); });
             safeRun('mapa', () => { if (window.L) initLeafletMap(); });
             safeRun('SISMEL', initSismel);
+            safeRun('fecha', smFecha);
+            safeRun('iconos2', () => { if (window.lucide) lucide.createIcons(); });
         });
 
         function populateSelect() {
@@ -1003,6 +1048,9 @@
             badgeEl.className = `badge-pill ${cls.badgeClass}`;
             badgeEl.textContent = cls.title;
 
+            const AVG = k => cityData.reduce((a, c) => a + c[k], 0) / cityData.length;
+            const dlt = (k, good) => { const d = city[k] - AVG(k); const cl = good === 0 ? 'text-textMuted' : (d * good > 0 ? 'text-emerald-700' : 'text-rose-700'); return `<p class="text-[9px] ${cl} font-semibold">${d >= 0 ? '+' : '−'}${Math.abs(d).toFixed(1).replace('.', ',')} pp vs. prom.</p>`; };
+            document.getElementById('map-focus').textContent = `Foco: ${city.ciudad} (${city.suicidios_eco_lab} casos econ./laboral)`;
             const kpiGrid = document.getElementById('kpi-cards-grid');
             kpiGrid.innerHTML = `
                 <div class="card-editorial p-3.5 space-y-1 relative">
@@ -1012,14 +1060,14 @@
                     </div>
                     <p class="text-xl font-bold text-textDark">${city.to}%</p>
                     <p class="text-[10px] font-medium text-textMuted">Tasa de ocupación</p>
-                    <p class="text-[9px] text-emerald-700 font-semibold">+6,8 pp vs. prom.</p>
+                    ${dlt('to', 1)}
                 </div>
 
                 <div class="card-editorial p-3.5 space-y-1">
                     <span class="p-1 bg-amber-100 rounded text-amber-900 inline-block"><i data-lucide="user-x" class="w-3.5 h-3.5"></i></span>
                     <p class="text-xl font-bold text-textDark">${city.td}%</p>
                     <p class="text-[10px] font-medium text-textMuted">Tasa de desocupación</p>
-                    <p class="text-[9px] text-emerald-700 font-semibold">-0,9 pp vs. prom.</p>
+                    ${dlt('td', -1)}
                 </div>
 
                 <div class="card-editorial p-3.5 space-y-1 relative">
@@ -1029,20 +1077,20 @@
                     </div>
                     <p class="text-xl font-bold text-textDark">${city.pct_precarizacion}%</p>
                     <p class="text-[10px] font-medium text-textMuted">Precarización e informalidad</p>
-                    <p class="text-[9px] text-rose-700 font-semibold">-4,8 pp vs. prom.</p>
+                    ${dlt('pct_precarizacion', -1)}
                 </div>
 
                 <div class="card-editorial p-3.5 space-y-1">
                     <span class="p-1 bg-amber-100 rounded text-amber-900 inline-block"><i data-lucide="file-check" class="w-3.5 h-3.5"></i></span>
                     <p class="text-xl font-bold text-textDark">${city.pct_empleado_particular}%</p>
                     <p class="text-[10px] font-medium text-textMuted">Asalariados formales</p>
-                    <p class="text-[9px] text-rose-700 font-semibold">-0,6 pp vs. prom.</p>
+                    ${dlt('pct_empleado_particular', 1)}
                 </div>
 
                 <div class="card-editorial p-3.5 space-y-1">
                     <span class="p-1 bg-amber-100 rounded text-amber-900 inline-block"><i data-lucide="ribbon" class="w-3.5 h-3.5"></i></span>
                     <p class="text-xl font-bold text-textDark">${city.suicidios_totales}</p>
-                    <p class="text-[10px] font-medium text-textMuted">Suicidios 2015–2026</p>
+                    <p class="text-[10px] font-medium text-textMuted">Suicidios 2015–jul 2026</p>
                     <p class="text-[9px] text-textMuted font-medium">${city.suicidios_eco_lab} con causa econ./laboral</p>
                 </div>
 
@@ -1050,7 +1098,7 @@
                     <span class="p-1 bg-amber-100 rounded text-amber-900 inline-block"><i data-lucide="scale" class="w-3.5 h-3.5"></i></span>
                     <p class="text-xl font-bold text-textDark">${city.pct_eco_conocido}%</p>
                     <p class="text-[10px] font-medium text-textMuted">% económico-laboral</p>
-                    <p class="text-[9px] text-rose-700 font-semibold">+2,3 pp vs. prom.</p>
+                    ${dlt('pct_eco_conocido', 0)}
                 </div>
             `;
 
@@ -1125,13 +1173,13 @@
             comboChartInstance = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: hist.anios,
+                    labels: hist.anios.map((a, i) => i === hist.anios.length - 1 ? a + '*' : a),
                     datasets: [
                         {
                             type: 'bar',
                             label: 'Suicidios Anuales',
                             data: hist.suicidios,
-                            backgroundColor: 'rgba(155, 44, 44, 0.25)',
+                            backgroundColor: hist.anios.map((a, i) => i === hist.anios.length - 1 ? 'rgba(155, 44, 44, 0.08)' : 'rgba(155, 44, 44, 0.25)'),
                             borderColor: '#9b2c2c',
                             borderWidth: 1.5,
                             borderRadius: 4,
@@ -1145,6 +1193,7 @@
                             backgroundColor: '#9b2c2c',
                             borderWidth: 2,
                             tension: 0.3,
+                            segment: { borderDash: c => c.p1DataIndex === hist.anios.length - 1 ? [5, 4] : undefined },
                             yAxisID: 'y'
                         },
                         {
@@ -1155,6 +1204,7 @@
                             backgroundColor: '#1c1917',
                             borderWidth: 2.5,
                             tension: 0.3,
+                            segment: { borderDash: c => c.p1DataIndex === hist.anios.length - 1 ? [5, 4] : undefined },
                             yAxisID: 'y'
                         },
                         {
@@ -1165,6 +1215,7 @@
                             backgroundColor: '#d97706',
                             borderWidth: 2,
                             tension: 0.3,
+                            segment: { borderDash: c => c.p1DataIndex === hist.anios.length - 1 ? [5, 4] : undefined },
                             yAxisID: 'y'
                         },
                         {
@@ -1175,6 +1226,7 @@
                             borderDash: [4, 4],
                             borderWidth: 2,
                             tension: 0.3,
+                            segment: { borderDash: c => c.p1DataIndex === hist.anios.length - 1 ? [5, 4] : undefined },
                             yAxisID: 'y'
                         }
                     ]
@@ -1355,7 +1407,7 @@
                 ['bar-chart-3','ROC-AUC',smF(best.auc),`Prueba final 2025–2026 · IC 95 % ${smF(best.lo)}–${smF(best.hi)}`,1],
                 ['trending-up','Factor de elevación',smF(best.lift, 2) + '×','Lift@20 % de la población priorizada',0],
                 ['trophy','Mejor AUC',best.m.replace('Regresión logística','Reg. logística'),'GB y RF quedan a ≤ 0,004: empate técnico',0]];
-            document.getElementById('sm-kpis').innerHTML = kp.map(k => `<div class="card-editorial p-4 space-y-1 ${k[4] ? '!bg-burgundy !border-burgundy text-white' : ''}"><div class="flex justify-between text-[11px] ${k[4] ? 'text-white/80' : 'text-textMuted'}"><span>${k[1]}</span><i data-lucide="${k[0]}" class="w-4 h-4"></i></div><p class="font-mono font-bold ${k[2].length > 8 ? 'text-lg' : 'text-3xl'} ${k[4] ? 'text-white' : 'text-textDark'}">${k[2]}</p><p class="text-[10px] ${k[4] ? 'text-white/80' : 'text-textMuted'}">${k[3]}</p></div>`).join('');
+            document.getElementById('sm-kpis').innerHTML = kp.map(k => `<div class="card-editorial p-4 space-y-1 ${k[4] ? '!bg-burgundy !border-burgundy text-white' : ''}"><div class="flex justify-between text-[11px] ${k[4] ? 'text-white/80' : 'text-textMuted'}"><span>${k[1]}</span><i data-lucide="${k[0]}" class="w-4 h-4"></i></div><p class="font-mono font-bold ${k[2].length > 8 ? 'text-base sm:text-lg' : 'text-3xl'} ${k[4] ? 'text-white' : 'text-textDark'}">${k[2]}</p><p class="text-[10px] ${k[4] ? 'text-white/80' : 'text-textMuted'}">${k[3]}</p></div>`).join('');
 
             document.querySelectorAll('#sm-stage-toggle button').forEach(b => b.onclick = () => smStage(+b.dataset.s));
             smStage(2);
@@ -1407,7 +1459,32 @@
                 options: { indexAxis: horiz ? 'y' : 'x', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => `${smF(c.raw, 1)} % de ${d[c.dataIndex].n.toLocaleString('es-CO')} casos` } } }, scales: { [horiz ? 'x' : 'y']: { grid: { color: '#eee8dc' }, ticks: { callback: v => v + '%', font: { size: 9 } } }, [horiz ? 'y' : 'x']: { grid: { display: false }, ticks: { font: { size: 9 } } } } } });
         }
 
+        const META = { actualizacion: '2026-10-27' };
+        function smFecha() {
+            const t = new Date(META.actualizacion + 'T12:00:00Z').toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+            document.getElementById('meta-fecha').textContent = t;
+            document.getElementById('meta-fecha-side').textContent = t;
+        }
+        function dlCSV(name, head, rows) {
+            const q = v => { const t = String(v ?? ''); return /[",\n;]/.test(t) ? '"' + t.replace(/"/g, '""') + '"' : t; };
+            const txt = '\ufeff' + [head, ...rows].map(r => r.map(q).join(',')).join('\r\n');
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(new Blob([txt], { type: 'text/csv;charset=utf-8' }));
+            a.download = name; document.body.appendChild(a); a.click(); a.remove();
+            setTimeout(() => URL.revokeObjectURL(a.href), 1500);
+        }
+        const slug = t => t.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '_');
+        function downloadMatrix() {
+            const cs = Object.keys(cityData[0].causas), k = ['cluster','lat','lng','to','td','tgp','tsub','pct_precarizacion','pct_cuenta_propia','pct_empleado_particular','pct_comercio_alojamiento','suicidios_totales','suicidios_con_razon','suicidios_eco_lab','pct_eco_conocido','pc1','pc2'];
+            dlCSV('observatorio_23_ciudades.csv', ['ciudad', ...k, ...cs.map(c => 'causa_' + slug(c))], cityData.map(c => [c.ciudad, ...k.map(x => c[x]), ...cs.map(x => c.causas[x] ?? '')]));
+        }
+        function downloadCity() {
+            const c = cityData.find(x => x.ciudad === document.getElementById('city-select').value) || cityData[0], h = c.historico, last = h.anios.length - 1;
+            dlCSV('serie_' + slug(c.ciudad) + '_2015_2026.csv', ['ciudad','anio','td_pct','to_pct','precarizacion_pct','formal_pct','suicidios','anio_parcial'], h.anios.map((a, i) => [c.ciudad, a, h.td[i], h.to[i], h.precarizacion[i], h.formal[i], h.suicidios[i], i === last ? 'si (ene-jul)' : 'no']));
+        }
+
         function setActiveNav(el) {
+            if (document.getElementById('sidebar').classList.contains('mobile-open')) toggleSidebar();
             document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
             el.classList.add('active');
         }
