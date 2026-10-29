@@ -346,8 +346,8 @@
                             </div>
                         </div>
 
-                        <!-- Contenedor del Mapa con Leyenda superpuesta -->
-                        <div class="relative w-full flex-1 min-h-[420px] rounded-xl border border-[#e2dacd] overflow-hidden">
+                        <!-- Contenedor del Mapa con altura fija (Soluciona el problema de Leaflet en blanco) -->
+                        <div class="relative w-full h-[420px] rounded-xl border border-[#e2dacd] overflow-hidden">
                             <div id="map" class="absolute inset-0 w-full h-full"></div>
                             <!-- Leyenda dinámica -->
                             <div id="map-legend" class="absolute bottom-4 left-4 z-[400] bg-white border border-gray-200 shadow-md rounded-lg p-2.5 text-[10px] pointer-events-none"></div>
@@ -998,6 +998,7 @@
         let mapInstance = null;
         let mapLayerGroup = null;
         let heatLayerInstance = null;
+        let currentMapMode = 'heat_abs'; // Estado global para el modo del mapa
 
         const clusterInfo = {
             0: {
@@ -1238,7 +1239,8 @@
 
             if (window.lucide) lucide.createIcons();
 
-            safeRun('ranking', () => renderTopCitiesRanking('heat_abs')); // Resetear a heat_abs al cambiar ciudad
+            // Actualizar panel derecho del mapa manteniendo el modo actual
+            safeRun('ranking', () => renderTopCitiesRanking(currentMapMode));
             safeRun('grafico evolucion', () => { if (window.Chart) updateComboChart(city); });
             safeRun('grafico causas', () => { if (window.Chart) updatePieChart(city); });
         }
@@ -1422,23 +1424,40 @@
             }).addTo(mapInstance);
 
             mapLayerGroup = L.layerGroup().addTo(mapInstance);
-            setMapMode('heat_abs');
+            
+            // Llamar al modo actual
+            setMapMode(currentMapMode);
 
             const bounds = L.latLngBounds(cityData.map(c => [c.lat, c.lng]));
             mapInstance.fitBounds(bounds, { padding: [30, 30] });
             setTimeout(() => {
-                mapInstance.invalidateSize();
-                mapInstance.fitBounds(bounds, { padding: [30, 30] });
-            }, 250);
+                if (mapInstance) {
+                    mapInstance.invalidateSize();
+                    mapInstance.fitBounds(bounds, { padding: [30, 30] });
+                }
+            }, 500); // Aumentado a 500ms para asegurar que el layout esté listo
         }
 
         function setMapMode(mode) {
-            mapLayerGroup.clearLayers();
-            if (heatLayerInstance) mapInstance.removeLayer(heatLayerInstance);
+            currentMapMode = mode;
 
+            // 1. Actualizar estado de los botones (siempre, incluso si el mapa falla)
             document.getElementById('btn-map-abs').className = mode === 'heat_abs' ? 'px-3 py-1.5 rounded-lg bg-burgundy text-white font-medium shadow-sm' : 'px-3 py-1.5 rounded-lg bg-[#eee9df] text-textDark hover:bg-[#e2dacd] font-medium transition-colors';
             document.getElementById('btn-map-pct').className = mode === 'heat_pct' ? 'px-3 py-1.5 rounded-lg bg-burgundy text-white font-medium shadow-sm' : 'px-3 py-1.5 rounded-lg bg-[#eee9df] text-textDark hover:bg-[#e2dacd] font-medium transition-colors';
             document.getElementById('btn-map-cls').className = mode === 'clusters' ? 'px-3 py-1.5 rounded-lg bg-burgundy text-white font-medium shadow-sm' : 'px-3 py-1.5 rounded-lg bg-[#eee9df] text-textDark hover:bg-[#e2dacd] font-medium transition-colors';
+
+            // 2. Actualizar panel derecho (siempre, independientemente del mapa)
+            renderTopCitiesRanking(mode);
+            updateMapLegend(mode);
+
+            // 3. Actualizar el mapa (solo si está listo)
+            if (!mapInstance || !mapLayerGroup) return;
+            
+            mapLayerGroup.clearLayers();
+            if (heatLayerInstance) {
+                mapInstance.removeLayer(heatLayerInstance);
+                heatLayerInstance = null;
+            }
 
             if (mode === 'heat_abs' || mode === 'heat_pct') {
                 const points = cityData.map(c => [c.lat, c.lng, mode === 'heat_abs' ? c.suicidios_eco_lab / 250 : c.pct_eco_conocido / 25]);
@@ -1466,13 +1485,12 @@
                     updateDashboard(c.ciudad);
                 });
             });
-
-            renderTopCitiesRanking(mode);
-            updateMapLegend(mode);
         }
 
         function updateMapLegend(mode) {
             const leg = document.getElementById('map-legend');
+            if (!leg) return;
+            
             if (mode === 'heat_abs') {
                 leg.innerHTML = `
                     <p class="font-bold text-textDark mb-1">Casos económico-laborales</p>
@@ -1524,10 +1542,14 @@
             sorted = sorted.slice(0, 8);
             const maxVal = sorted[0][dataKey];
 
-            document.getElementById('top-cities-title').textContent = title;
-            document.getElementById('top-cities-subtitle').textContent = subtitle;
+            const titleEl = document.getElementById('top-cities-title');
+            const subtitleEl = document.getElementById('top-cities-subtitle');
+            if (titleEl) titleEl.textContent = title;
+            if (subtitleEl) subtitleEl.textContent = subtitle;
 
             const el = document.getElementById('top-cities-list');
+            if (!el) return;
+
             el.innerHTML = sorted.map((c, i) => `
                 <div class="space-y-1 cursor-pointer hover:bg-amber-50 p-1.5 rounded-lg transition-colors" onclick="selectCityFromTable('${c.ciudad}')">
                     <div class="flex justify-between items-center text-xs">
