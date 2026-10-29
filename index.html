@@ -84,6 +84,7 @@
         .leaflet-container {
             background-color: #f5f0e6 !important;
             border-radius: 0.875rem;
+            font-family: 'Plus Jakarta Sans', sans-serif;
         }
 
         .chart-container {
@@ -346,9 +347,9 @@
                             </div>
                         </div>
 
-                        <!-- Contenedor del Mapa con altura fija -->
+                        <!-- Contenedor del Mapa corregido (sin absolute para evitar fallos de Leaflet) -->
                         <div class="relative w-full h-[420px] rounded-xl border border-[#e2dacd] overflow-hidden">
-                            <div id="map" class="absolute inset-0 w-full h-full bg-[#f5f0e6]"></div>
+                            <div id="map" class="w-full h-full z-0"></div>
                             <!-- Leyenda dinámica -->
                             <div id="map-legend" class="absolute bottom-4 left-4 z-[400] bg-white border border-gray-200 shadow-md rounded-lg p-2.5 text-[10px] pointer-events-none"></div>
                         </div>
@@ -1421,6 +1422,12 @@
             const mapEl = document.getElementById('map');
             if (!mapEl) return;
 
+            // Verificar que el contenedor tenga dimensiones (evita inicialización en 0x0)
+            if (mapEl.clientWidth === 0 || mapEl.clientHeight === 0) {
+                setTimeout(initLeafletMap, 100);
+                return;
+            }
+
             mapInstance = L.map('map', { center: [4.5709, -74.2973], zoom: 5, zoomControl: false });
             L.control.zoom({ position: 'topleft' }).addTo(mapInstance);
             
@@ -1433,11 +1440,9 @@
             const bounds = L.latLngBounds(cityData.map(c => [c.lat, c.lng]));
             mapInstance.fitBounds(bounds, { padding: [30, 30] });
 
-            // Esperar un poco para que flexbox asigne las dimensiones antes de forzar resize y pintar el calor
             setTimeout(() => {
                 if (mapInstance) {
                     mapInstance.invalidateSize();
-                    mapInstance.fitBounds(bounds, { padding: [30, 30] });
                     setMapMode(currentMapMode);
                 }
             }, 300);
@@ -1446,16 +1451,13 @@
         function setMapMode(mode) {
             currentMapMode = mode;
 
-            // 1. Actualizar estado de los botones
             document.getElementById('btn-map-abs').className = mode === 'heat_abs' ? 'px-3 py-1.5 rounded-lg bg-burgundy text-white font-medium shadow-sm' : 'px-3 py-1.5 rounded-lg bg-[#eee9df] text-textDark hover:bg-[#e2dacd] font-medium transition-colors';
             document.getElementById('btn-map-pct').className = mode === 'heat_pct' ? 'px-3 py-1.5 rounded-lg bg-burgundy text-white font-medium shadow-sm' : 'px-3 py-1.5 rounded-lg bg-[#eee9df] text-textDark hover:bg-[#e2dacd] font-medium transition-colors';
             document.getElementById('btn-map-cls').className = mode === 'clusters' ? 'px-3 py-1.5 rounded-lg bg-burgundy text-white font-medium shadow-sm' : 'px-3 py-1.5 rounded-lg bg-[#eee9df] text-textDark hover:bg-[#e2dacd] font-medium transition-colors';
 
-            // 2. Actualizar panel derecho
             renderTopCitiesRanking(mode);
             updateMapLegend(mode);
 
-            // 3. Actualizar mapa
             if (!mapInstance || !mapLayerGroup) return;
             
             mapLayerGroup.clearLayers();
@@ -1487,10 +1489,9 @@
             if (mode === 'heat_abs' || mode === 'heat_pct') {
                 const points = cityData.map(c => [c.lat, c.lng, mode === 'heat_abs' ? c.suicidios_eco_lab / 250 : c.pct_eco_conocido / 25]);
                 if (L.heatLayer) {
-                    // Un segundo setTimeout para asegurar que el canvas del mapa ya mide > 0
                     setTimeout(() => {
                         const mapEl = document.getElementById('map');
-                        if (mapEl && mapEl.clientWidth > 0 && mapEl.clientHeight > 0) {
+                        if (mapInstance && mapEl && mapEl.clientWidth > 0 && mapEl.clientHeight > 0) {
                             heatLayerInstance = L.heatLayer(points, { radius: 25, blur: 15, maxZoom: 10 }).addTo(mapInstance);
                         }
                     }, 100);
