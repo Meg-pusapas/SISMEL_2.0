@@ -260,99 +260,65 @@
             </section>
 
             <!-- MÓDULO 01 -->
-<section id="clustering" class="space-y-4 pt-6 border-t border-[#e8e2d5]">
-    <div class="space-y-1">
-        <p class="text-[10px] font-bold text-burgundy uppercase tracking-widest">MÓDULO 01 · CRISP-DM GEIH</p>
-        <h2 class="font-serif font-bold text-2xl text-textDark">Diagnóstico territorial & clustering</h2>
-        <p class="text-xs text-textMuted">K-Means (k=3) sobre indicadores estandarizados de ocupación, desempleo, informalidad y formalidad asalariada.</p>
-    </div>
-
-    <!-- Contenedor Principal en Grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-        
-        <!-- Panel Izquierdo: Información del Clúster -->
-        <div class="lg:col-span-5 card-editorial p-6 flex flex-col justify-between bg-white rounded-xl border border-gray-100 shadow-sm">
-            
-            <div class="space-y-4">
-                <!-- Selector de Clústeres (Pestañas) -->
-                <div class="flex flex-wrap gap-1.5 mb-5 pb-4 border-b border-gray-100" id="cluster-tabs">
-                    <button data-cluster="0" onclick="onClusterTabClick(0)" class="flex items-center space-x-1.5 px-3 py-1.5 text-xs font-medium rounded-lg hover:bg-gray-50 transition-colors">
-                        <span class="w-2.5 h-2.5 rounded-full" style="background-color:#059669"></span><span>Clúster 0</span>
-                    </button>
-                    <button data-cluster="1" onclick="onClusterTabClick(1)" class="flex items-center space-x-1.5 px-3 py-1.5 text-xs font-medium rounded-lg hover:bg-gray-50 transition-colors">
-                        <span class="w-2.5 h-2.5 rounded-full" style="background-color:#e11d48"></span><span>Clúster 1</span>
-                    </button>
-                    <button data-cluster="2" onclick="onClusterTabClick(2)" class="flex items-center space-x-1.5 px-3 py-1.5 text-xs font-medium rounded-lg hover:bg-gray-50 transition-colors">
-                        <span class="w-2.5 h-2.5 rounded-full" style="background-color:#d97706"></span><span>Clúster 2</span>
-                    </button>
+            <section id="clustering" class="space-y-4 pt-6 border-t border-[#e8e2d5]">
+                <div class="space-y-1">
+                    <p class="text-[10px] font-bold text-burgundy uppercase tracking-widest">MÓDULO 01 · CRISP-DM GEIH</p>
+                    <h2 class="font-serif font-bold text-2xl text-textDark">Diagnóstico territorial & clustering</h2>
+                    <p class="text-xs text-textMuted">K-Means (k=3) sobre indicadores estandarizados de ocupación, desempleo, informalidad y formalidad asalariada.</p>
                 </div>
 
-                <!-- Detalle Dinámico del Clúster (Aquí se inyectan título, descripción y los porcentajes horizontalmente) -->
-                <div class="space-y-4" id="cluster-detail-box">
-                    <!-- Ejemplo de la estructura interna que renderiza los porcentajes en una sola línea horizontal -->
-                    <!-- 
-                    <div class="space-y-2">
-                        <div class="flex items-center space-x-2 text-[10px] font-bold text-textMuted tracking-widest uppercase">
-                            <span class="w-2.5 h-2.5 rounded-full" style="background-color:#d97706"></span>
-                            <span>Clúster 2 • 8 Ciudades</span>
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+                    
+                    <!-- Panel Izquierdo: Información del Clúster -->
+                    <div class="lg:col-span-5 card-editorial p-6 flex flex-col justify-between bg-white rounded-xl border border-gray-100 shadow-sm">
+                        
+                        <div>
+                            <!-- Selector de Clústeres -->
+                            <div class="flex flex-wrap gap-1.5 mb-5 pb-4 border-b border-gray-100" id="cluster-tabs">
+                                <button data-cluster="0" onclick="onClusterTabClick(0)" class="flex items-center space-x-1.5 px-3 py-1.5 text-xs font-medium rounded-lg hover:bg-gray-50 transition-colors">
+                                    <span class="w-2.5 h-2.5 rounded-full" style="background-color:#059669"></span><span>Clúster 0</span>
+                                </button>
+                                <button data-cluster="1" onclick="onClusterTabClick(1)" class="flex items-center space-x-1.5 px-3 py-1.5 text-xs font-medium rounded-lg hover:bg-gray-50 transition-colors">
+                                    <span class="w-2.5 h-2.5 rounded-full" style="background-color:#e11d48"></span><span>Clúster 1</span>
+                                </button>
+                                <button data-cluster="2" onclick="onClusterTabClick(2)" class="flex items-center space-x-1.5 px-3 py-1.5 text-xs font-medium rounded-lg hover:bg-gray-50 transition-colors">
+                                    <span class="w-2.5 h-2.5 rounded-full" style="background-color:#d97706"></span><span>Clúster 2</span>
+                                </button>
+                            </div>
+
+                            <!-- Detalle Dinámico -->
+                            <div class="space-y-4" id="cluster-detail-box"></div>
                         </div>
-                        <h3 class="text-xl font-serif text-textDark leading-tight">Informalidad Urbana / Transición Regional</h3>
-                        <p class="text-xs text-textMuted leading-relaxed">Ocupación alta sostenida por autoempleo de subsistencia...</p>
+
+                        <!-- Lista de Ciudades -->
+                        <div id="cities-box" class="pt-5 mt-5 border-t border-gray-100"></div>
                     </div>
 
-                    Grilla horizontal de 4 columnas para los porcentajes:
-                    <div class="grid grid-cols-4 gap-2 pt-2">
-                        <div class="bg-gray-50/80 p-2 text-center rounded border border-gray-100">
-                            <div class="font-bold text-textDark text-sm">57,3%</div>
-                            <div class="text-[8px] text-textMuted uppercase tracking-wide mt-0.5">TO Prom.</div>
+                    <!-- Panel Derecho: Gráfico PCA -->
+                    <div class="lg:col-span-7 card-editorial p-5 flex flex-col bg-white rounded-xl border border-gray-100 shadow-sm">
+                        <div class="mb-2">
+                            <h3 class="font-bold text-sm text-textDark">Proyección PCA de las 23 ciudades</h3>
+                            <div class="flex flex-wrap items-center justify-between gap-2 mt-1">
+                                <span class="text-[10px] text-textMuted font-medium">Varianza explicada: Dim 1 = 58,4% · Dim 2 = 24,1%</span>
+                                <div class="flex gap-3 text-[10px] text-textMuted">
+                                    <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#059669]"></span> Formales</span>
+                                    <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#e11d48]"></span> Precarización Extrema</span>
+                                    <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#d97706]"></span> Informalidad Urbana</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="bg-gray-50/80 p-2 text-center rounded border border-gray-100">
-                            <div class="font-bold text-textDark text-sm">11,3%</div>
-                            <div class="text-[8px] text-textMuted uppercase tracking-wide mt-0.5">TD Prom.</div>
+
+                        <div class="chart-container flex-grow relative w-full min-h-[320px]">
+                            <canvas id="pcaChart" class="absolute inset-0 w-full h-full"></canvas>
                         </div>
-                        <div class="bg-gray-50/80 p-2 text-center rounded border border-gray-100">
-                            <div class="font-bold text-textDark text-sm">50,6%</div>
-                            <div class="text-[8px] text-textMuted uppercase tracking-wide mt-0.5">Precar.</div>
-                        </div>
-                        <div class="bg-gray-50/80 p-2 text-center rounded border border-gray-100">
-                            <div class="font-bold text-textDark text-sm">38,9%</div>
-                            <div class="text-[8px] text-textMuted uppercase tracking-wide mt-0.5">Formal</div>
+
+                        <div class="mt-3 pt-3 border-t border-gray-50 flex justify-between items-center text-[10px] text-textMuted">
+                            <span>→ <strong>Dim 1 · Formalidad:</strong> asalariados formales</span>
+                            <span>↑ <strong>Dim 2 · Dinamismo:</strong> tasa de ocupación</span>
                         </div>
                     </div>
-                    -->
                 </div>
-            </div>
-
-            <!-- Lista de Ciudades -->
-            <div id="cities-box" class="pt-5 mt-5 border-t border-gray-100"></div>
-        </div>
-
-        <!-- Panel Derecho: Gráfico PCA Ampliado -->
-        <div class="lg:col-span-7 card-editorial p-5 flex flex-col bg-white rounded-xl border border-gray-100 shadow-sm">
-            <div class="mb-2">
-                <h3 class="font-bold text-sm text-textDark">Proyección PCA de las 23 ciudades</h3>
-                <div class="flex flex-wrap items-center justify-between gap-2 mt-1">
-                    <span class="text-[10px] text-textMuted font-medium">Varianza explicada: Dim 1 = 58,4% · Dim 2 = 24,1%</span>
-                    <div class="flex gap-3 text-[10px] text-textMuted">
-                        <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#059669]"></span> Formales</span>
-                        <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#e11d48]"></span> Precarización Extrema</span>
-                        <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#d97706]"></span> Informalidad Urbana</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Gráfico con altura adaptada -->
-            <div class="chart-container flex-grow relative w-full min-h-[320px]">
-                <canvas id="pcaChart" class="absolute inset-0 w-full h-full"></canvas>
-            </div>
-
-            <div class="mt-3 pt-3 border-t border-gray-50 flex justify-between items-center text-[10px] text-textMuted">
-                <span>→ <strong>Dim 1 · Formalidad:</strong> asalariados formales</span>
-                <span>↑ <strong>Dim 2 · Dinamismo:</strong> tasa de ocupación</span>
-            </div>
-        </div>
-    </div>
-</section>
+            </section>
 
             <!-- MÓDULO 02 -->
             <section id="mapa" class="space-y-4 pt-6 border-t border-[#e8e2d5]">
@@ -363,40 +329,55 @@
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+                    
+                    <!-- Columna Izquierda: Mapa -->
                     <div class="lg:col-span-8 card-editorial p-4 space-y-3 flex flex-col justify-between">
                         <div class="flex flex-wrap items-center justify-between gap-2 border-b border-[#eee8dc] pb-3">
-                            <div class="flex gap-1.5 text-xs">
-                                <button onclick="setMapMode('heat_abs')" id="btn-map-abs" class="px-3 py-1.5 rounded-lg bg-burgundy text-white font-medium shadow-sm">
+                            <div class="flex flex-wrap gap-1.5 text-xs">
+                                <button onclick="setMapMode('heat_abs')" id="btn-map-abs" class="px-3 py-1.5 rounded-lg bg-burgundy text-white font-medium shadow-sm transition-colors">
                                     🔥 Volumen absoluto
                                 </button>
-                                <button onclick="setMapMode('heat_pct')" id="btn-map-pct" class="px-3 py-1.5 rounded-lg bg-[#eee9df] text-textDark hover:bg-[#e2dacd] font-medium">
+                                <button onclick="setMapMode('heat_pct')" id="btn-map-pct" class="px-3 py-1.5 rounded-lg bg-[#eee9df] text-textDark hover:bg-[#e2dacd] font-medium transition-colors">
                                     📊 % sobre causas conocidas
                                 </button>
-                                <button onclick="setMapMode('clusters')" id="btn-map-cls" class="px-3 py-1.5 rounded-lg bg-[#eee9df] text-textDark hover:bg-[#e2dacd] font-medium">
+                                <button onclick="setMapMode('clusters')" id="btn-map-cls" class="px-3 py-1.5 rounded-lg bg-[#eee9df] text-textDark hover:bg-[#e2dacd] font-medium transition-colors">
                                     🎯 Marcadores por clúster
                                 </button>
                             </div>
                         </div>
 
-                        <div id="map" class="flex-1 min-h-[420px] w-full rounded-xl border border-[#e2dacd]"></div>
+                        <!-- Contenedor del Mapa con Leyenda superpuesta -->
+                        <div class="relative w-full flex-1 min-h-[420px] rounded-xl border border-[#e2dacd] overflow-hidden">
+                            <div id="map" class="absolute inset-0 w-full h-full"></div>
+                            <!-- Leyenda dinámica -->
+                            <div id="map-legend" class="absolute bottom-4 left-4 z-[400] bg-white border border-gray-200 shadow-md rounded-lg p-2.5 text-[10px] pointer-events-none"></div>
+                        </div>
 
                         <div class="flex items-center justify-between text-[11px] text-textMuted pt-1">
                             <span>Concentración geográfica de casos reportados en Medicina Legal.</span>
-                            <span id="map-focus" class="font-bold text-burgundy">Foco: Pasto</span>
                         </div>
                     </div>
 
-                    <div class="lg:col-span-4 card-editorial p-5 space-y-4 flex flex-col justify-between">
-                        <div class="space-y-1 border-b border-[#eee8dc] pb-3">
-                            <h3 class="font-serif font-bold text-base text-textDark">Top 8 · Volumen absoluto</h3>
-                            <p class="text-[11px] text-textMuted">Casos de origen económico/laboral 2015–2026</p>
+                    <!-- Columna Derecha: Panel Dinámico -->
+                    <div class="lg:col-span-4 flex flex-col gap-4">
+                        
+                        <!-- Tarjeta Ciudad en Foco -->
+                        <div id="map-focus-card" class="card-editorial p-5 bg-white rounded-xl border border-[#e8e2d5] shadow-sm">
+                            <!-- Contenido inyectado por JS -->
                         </div>
 
-                        <div class="space-y-2.5 text-xs" id="top-cities-list"></div>
-
-                        <div class="p-3 bg-amber-50 rounded-xl border border-amber-200 text-[11px] text-amber-900">
-                            <strong>Nota:</strong> Las capitales principales acumulan mayor cantidad absoluta por tamaño demográfico, mientras las ciudades intermedias destacan en incidencia relativa.
+                        <!-- Tarjeta Top 8 -->
+                        <div class="card-editorial p-5 bg-white rounded-xl border border-[#e8e2d5] shadow-sm flex-1 flex flex-col">
+                            <div class="flex justify-between items-center border-b border-[#eee8dc] pb-3 mb-3">
+                                <div>
+                                    <h3 id="top-cities-title" class="font-serif font-bold text-base text-textDark">Top 8 · Volumen absoluto</h3>
+                                    <p id="top-cities-subtitle" class="text-[11px] text-textMuted">Casos de origen económico/laboral 2015–2026</p>
+                                </div>
+                                <span class="p-1.5 bg-amber-100 rounded text-burgundy"><i data-lucide="bar-chart-2" class="w-4 h-4"></i></span>
+                            </div>
+                            <div class="space-y-2.5 text-xs flex-1" id="top-cities-list"></div>
                         </div>
+                        
                     </div>
                 </div>
             </section>
@@ -1045,6 +1026,15 @@
             }
         };
 
+        const departamentos = { 
+            "Pasto": "Nariño", "Bogotá": "Cundinamarca", "Medellín": "Antioquia", "Cali": "Valle del Cauca", 
+            "Cúcuta": "Norte de Santander", "Quibdó": "Chocó", "Bucaramanga": "Santander", "Barranquilla": "Atlántico", 
+            "Pereira": "Risaralda", "Ibagué": "Tolima", "Manizales": "Caldas", "Cartagena": "Bolívar", 
+            "Santa Marta": "Magdalena", "Neiva": "Huila", "Armenia": "Quindío", "Popayán": "Cauca", 
+            "Montería": "Córdoba", "Tunja": "Boyacá", "Villavicencio": "Meta", "Florencia": "Caquetá", 
+            "Valledupar": "Cesar", "Sincelejo": "Sucre", "Riohacha": "La Guajira" 
+        };
+
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             if (window.innerWidth < 1024) {
@@ -1089,25 +1079,21 @@
             select.addEventListener('change', (e) => updateDashboard(e.target.value));
         }
 
-        // Renderiza el panel de información del clúster horizontal
         function renderClusterInfo(clusterId, activeCity) {
             const info = clusterInfo[clusterId];
             const citiesInCluster = cityData.filter(c => c.cluster === clusterId);
             const count = citiesInCluster.length;
 
-            // Calcular promedios
             const avgTo = citiesInCluster.reduce((s, c) => s + c.to, 0) / count;
             const avgTd = citiesInCluster.reduce((s, c) => s + c.td, 0) / count;
             const avgPrec = citiesInCluster.reduce((s, c) => s + c.pct_precarizacion, 0) / count;
             const avgFormal = citiesInCluster.reduce((s, c) => s + c.pct_empleado_particular, 0) / count;
 
-            // Actualizar pestañas
             document.querySelectorAll('#cluster-tabs button').forEach(tab => {
                 const isActive = +tab.dataset.cluster === clusterId;
                 tab.className = `flex items-center space-x-1.5 px-3 py-1.5 text-xs rounded-lg transition-colors ${isActive ? 'bg-white shadow-sm border border-gray-200 font-bold text-textDark' : 'font-medium text-textMuted hover:bg-gray-50'}`;
             });
 
-            // Estructura de la tarjeta del clúster
             const shortTitle = info.title.split('·')[1]?.trim() || info.title;
             document.getElementById('cluster-detail-box').innerHTML = `
                 <div class="flex items-center space-x-2 text-[10px] font-bold text-textMuted tracking-widest uppercase mb-1">
@@ -1137,7 +1123,6 @@
                 </div>
             `;
 
-            // Lista de ciudades
             const citiesBtns = citiesInCluster.map(c => {
                 const isActive = c.ciudad === activeCity;
                 return `<button onclick="selectCityFromTable('${c.ciudad}')" class="px-3 py-1.5 rounded-full border text-[11px] ${isActive ? 'border-[#8a2a2b] text-white bg-[#8a2a2b] font-medium shadow-sm' : 'border-gray-200 text-textDark bg-white hover:bg-gray-50 transition-colors'}">${c.ciudad}${c.ciudad === 'Pasto' ? ' ★' : ''}</button>`;
@@ -1174,9 +1159,30 @@
             badgeEl.className = `badge-pill ${cls.badgeClass}`;
             badgeEl.textContent = cls.title;
 
+            // Actualizar Ciudad en Foco en el Módulo 02
+            document.getElementById('map-focus-card').innerHTML = `
+                <div class="flex justify-between items-start mb-2">
+                    <div>
+                        <p class="text-[9px] font-bold text-textMuted uppercase tracking-widest">Ciudad en foco</p>
+                        <h4 id="focus-card-city" class="font-serif font-bold text-lg text-textDark">${city.ciudad}</h4>
+                        <p class="text-[10px] text-textMuted">${departamentos[city.ciudad] || ""}</p>
+                    </div>
+                    <span class="badge-pill ${cls.badgeClass}">Clúster ${city.cluster}</span>
+                </div>
+                <div class="grid grid-cols-2 gap-2 mt-3">
+                    <div class="bg-[#f7f4ed] p-2 rounded border border-[#e8e2d5]">
+                        <p class="font-bold text-textDark text-base">${city.suicidios_eco_lab}</p>
+                        <p class="text-[9px] text-textMuted uppercase">casos econ/laborales</p>
+                    </div>
+                    <div class="bg-[#f7f4ed] p-2 rounded border border-[#e8e2d5]">
+                        <p class="font-bold text-textDark text-base">${city.pct_eco_conocido}%</p>
+                        <p class="text-[9px] text-textMuted uppercase">de causas conocidas</p>
+                    </div>
+                </div>
+            `;
+
             const AVG = k => cityData.reduce((a, c) => a + c[k], 0) / cityData.length;
             const dlt = (k, good) => { const d = city[k] - AVG(k); const cl = good === 0 ? 'text-textMuted' : (d * good > 0 ? 'text-emerald-700' : 'text-rose-700'); return `<p class="text-[9px] ${cl} font-semibold">${d >= 0 ? '+' : '−'}${Math.abs(d).toFixed(1).replace('.', ',')} pp vs. prom.</p>`; };
-            document.getElementById('map-focus').textContent = `Foco: ${city.ciudad} (${city.suicidios_eco_lab} casos econ./laboral)`;
             const kpiGrid = document.getElementById('kpi-cards-grid');
             kpiGrid.innerHTML = `
                 <div class="card-editorial p-3.5 space-y-1 relative">
@@ -1232,7 +1238,7 @@
 
             if (window.lucide) lucide.createIcons();
 
-            safeRun('ranking', renderTopCitiesRanking);
+            safeRun('ranking', () => renderTopCitiesRanking('heat_abs')); // Resetear a heat_abs al cambiar ciudad
             safeRun('grafico evolucion', () => { if (window.Chart) updateComboChart(city); });
             safeRun('grafico causas', () => { if (window.Chart) updatePieChart(city); });
         }
@@ -1241,7 +1247,6 @@
             const ctx = document.getElementById('pcaChart').getContext('2d');
             const clusterColors = { 0: '#059669', 1: '#e11d48', 2: '#d97706' };
 
-            // Asignar datos con las propiedades necesarias para el tooltip
             const datasets = [0, 1, 2].map(cId => ({
                 label: `Clúster ${cId}`,
                 data: cityData.filter(c => c.cluster === cId).map(c => ({ 
@@ -1431,9 +1436,9 @@
             mapLayerGroup.clearLayers();
             if (heatLayerInstance) mapInstance.removeLayer(heatLayerInstance);
 
-            document.getElementById('btn-map-abs').className = mode === 'heat_abs' ? 'px-3 py-1.5 rounded-lg bg-burgundy text-white font-medium shadow-sm' : 'px-3 py-1.5 rounded-lg bg-[#eee9df] text-textDark font-medium';
-            document.getElementById('btn-map-pct').className = mode === 'heat_pct' ? 'px-3 py-1.5 rounded-lg bg-burgundy text-white font-medium shadow-sm' : 'px-3 py-1.5 rounded-lg bg-[#eee9df] text-textDark font-medium';
-            document.getElementById('btn-map-cls').className = mode === 'clusters' ? 'px-3 py-1.5 rounded-lg bg-burgundy text-white font-medium shadow-sm' : 'px-3 py-1.5 rounded-lg bg-[#eee9df] text-textDark font-medium';
+            document.getElementById('btn-map-abs').className = mode === 'heat_abs' ? 'px-3 py-1.5 rounded-lg bg-burgundy text-white font-medium shadow-sm' : 'px-3 py-1.5 rounded-lg bg-[#eee9df] text-textDark hover:bg-[#e2dacd] font-medium transition-colors';
+            document.getElementById('btn-map-pct').className = mode === 'heat_pct' ? 'px-3 py-1.5 rounded-lg bg-burgundy text-white font-medium shadow-sm' : 'px-3 py-1.5 rounded-lg bg-[#eee9df] text-textDark hover:bg-[#e2dacd] font-medium transition-colors';
+            document.getElementById('btn-map-cls').className = mode === 'clusters' ? 'px-3 py-1.5 rounded-lg bg-burgundy text-white font-medium shadow-sm' : 'px-3 py-1.5 rounded-lg bg-[#eee9df] text-textDark hover:bg-[#e2dacd] font-medium transition-colors';
 
             if (mode === 'heat_abs' || mode === 'heat_pct') {
                 const points = cityData.map(c => [c.lat, c.lng, mode === 'heat_abs' ? c.suicidios_eco_lab / 250 : c.pct_eco_conocido / 25]);
@@ -1443,8 +1448,12 @@
             }
 
             cityData.forEach(c => {
+                const radius = mode === 'clusters' 
+                    ? Math.max(4, Math.sqrt(c.suicidios_totales) * 0.2)
+                    : Math.max(4, Math.sqrt(c.suicidios_eco_lab) * 0.8);
+
                 const marker = L.circleMarker([c.lat, c.lng], {
-                    radius: mode === 'clusters' ? 7 : Math.max(4, Math.sqrt(c.suicidios_eco_lab) * 0.8),
+                    radius: radius,
                     fillColor: mode === 'clusters' ? clusterInfo[c.cluster].colorHex : '#9b2c2c',
                     color: '#ffffff',
                     weight: 1,
@@ -1457,21 +1466,76 @@
                     updateDashboard(c.ciudad);
                 });
             });
+
+            renderTopCitiesRanking(mode);
+            updateMapLegend(mode);
         }
 
-        function renderTopCitiesRanking() {
-            const sorted = cityData.slice().sort((a,b) => b.suicidios_eco_lab - a.suicidios_eco_lab).slice(0, 8);
-            const maxVal = sorted[0]?.suicidios_eco_lab || 1;
+        function updateMapLegend(mode) {
+            const leg = document.getElementById('map-legend');
+            if (mode === 'heat_abs') {
+                leg.innerHTML = `
+                    <p class="font-bold text-textDark mb-1">Casos económico-laborales</p>
+                    <div class="w-32 h-2 rounded bg-gradient-to-r from-[#fde0b4] to-[#9b2c2c] mb-1"></div>
+                    <div class="flex justify-between text-textMuted w-32"><span>Menor</span><span>Mayor</span></div>
+                `;
+            } else if (mode === 'heat_pct') {
+                leg.innerHTML = `
+                    <p class="font-bold text-textDark mb-1">% sobre causas conocidas</p>
+                    <div class="w-32 h-2 rounded bg-gradient-to-r from-[#fde0b4] to-[#9b2c2c] mb-1"></div>
+                    <div class="flex justify-between text-textMuted w-32"><span>Menor</span><span>Mayor</span></div>
+                `;
+            } else {
+                leg.innerHTML = `
+                    <p class="font-bold text-textDark mb-1.5">Clúster socio-laboral</p>
+                    <div class="space-y-1">
+                        <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#059669] border border-white"></span><span>0 · Formales</span></div>
+                        <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#e11d48] border border-white"></span><span>1 · Precarización Extrema</span></div>
+                        <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#d97706] border border-white"></span><span>2 · Informalidad Urbana</span></div>
+                    </div>
+                    <p class="mt-2 text-textMuted text-[9px]">Tamaño ∝ suicidios registrados</p>
+                `;
+            }
+        }
+
+        function renderTopCitiesRanking(mode) {
+            let sorted, title, subtitle, dataKey, unit;
+            
+            if (mode === 'heat_abs') {
+                sorted = [...cityData].sort((a,b) => b.suicidios_eco_lab - a.suicidios_eco_lab);
+                title = "Top 8 · Volumen absoluto";
+                subtitle = "Casos de origen económico/laboral 2015–2026";
+                dataKey = 'suicidios_eco_lab';
+                unit = '';
+            } else if (mode === 'heat_pct') {
+                sorted = [...cityData].sort((a,b) => b.pct_eco_conocido - a.pct_eco_conocido);
+                title = "Top 8 · % de incidencia";
+                subtitle = "Porcentaje sobre causas conocidas";
+                dataKey = 'pct_eco_conocido';
+                unit = '%';
+            } else {
+                sorted = [...cityData].sort((a,b) => b.suicidios_totales - a.suicidios_totales);
+                title = "Top 8 · suicidios registrados";
+                subtitle = "Total de casos 2015–2026";
+                dataKey = 'suicidios_totales';
+                unit = '';
+            }
+            
+            sorted = sorted.slice(0, 8);
+            const maxVal = sorted[0][dataKey];
+
+            document.getElementById('top-cities-title').textContent = title;
+            document.getElementById('top-cities-subtitle').textContent = subtitle;
 
             const el = document.getElementById('top-cities-list');
             el.innerHTML = sorted.map((c, i) => `
                 <div class="space-y-1 cursor-pointer hover:bg-amber-50 p-1.5 rounded-lg transition-colors" onclick="selectCityFromTable('${c.ciudad}')">
                     <div class="flex justify-between items-center text-xs">
                         <span class="font-bold text-textDark">${i+1}. ${c.ciudad}</span>
-                        <strong class="text-burgundy">${c.suicidios_eco_lab}</strong>
+                        <strong class="text-burgundy">${c[dataKey].toLocaleString('es-CO')}${unit}</strong>
                     </div>
                     <div class="w-full bg-[#eee9df] h-1.5 rounded-full overflow-hidden">
-                        <div class="bg-burgundy h-1.5 rounded-full" style="width: ${(c.suicidios_eco_lab/maxVal)*100}%;"></div>
+                        <div class="bg-burgundy h-1.5 rounded-full" style="width: ${(c[dataKey]/maxVal)*100}%;"></div>
                     </div>
                 </div>
             `).join('');
