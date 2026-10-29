@@ -260,67 +260,99 @@
             </section>
 
             <!-- MÓDULO 01 -->
-            <section id="clustering" class="space-y-4 pt-6 border-t border-[#e8e2d5]">
-                <div class="space-y-1">
-                    <p class="text-[10px] font-bold text-burgundy uppercase tracking-widest">MÓDULO 01 · CRISP-DM GEIH</p>
-                    <h2 class="font-serif font-bold text-2xl text-textDark">Diagnóstico territorial & clustering</h2>
-                    <p class="text-xs text-textMuted">K-Means (k=3) sobre indicadores estandarizados de ocupación, desempleo, informalidad y formalidad asalariada.</p>
+<section id="clustering" class="space-y-4 pt-6 border-t border-[#e8e2d5]">
+    <div class="space-y-1">
+        <p class="text-[10px] font-bold text-burgundy uppercase tracking-widest">MÓDULO 01 · CRISP-DM GEIH</p>
+        <h2 class="font-serif font-bold text-2xl text-textDark">Diagnóstico territorial & clustering</h2>
+        <p class="text-xs text-textMuted">K-Means (k=3) sobre indicadores estandarizados de ocupación, desempleo, informalidad y formalidad asalariada.</p>
+    </div>
+
+    <!-- Contenedor Principal en Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+        
+        <!-- Panel Izquierdo: Información del Clúster -->
+        <div class="lg:col-span-5 card-editorial p-6 flex flex-col justify-between bg-white rounded-xl border border-gray-100 shadow-sm">
+            
+            <div class="space-y-4">
+                <!-- Selector de Clústeres (Pestañas) -->
+                <div class="flex flex-wrap gap-1.5 mb-5 pb-4 border-b border-gray-100" id="cluster-tabs">
+                    <button data-cluster="0" onclick="onClusterTabClick(0)" class="flex items-center space-x-1.5 px-3 py-1.5 text-xs font-medium rounded-lg hover:bg-gray-50 transition-colors">
+                        <span class="w-2.5 h-2.5 rounded-full" style="background-color:#059669"></span><span>Clúster 0</span>
+                    </button>
+                    <button data-cluster="1" onclick="onClusterTabClick(1)" class="flex items-center space-x-1.5 px-3 py-1.5 text-xs font-medium rounded-lg hover:bg-gray-50 transition-colors">
+                        <span class="w-2.5 h-2.5 rounded-full" style="background-color:#e11d48"></span><span>Clúster 1</span>
+                    </button>
+                    <button data-cluster="2" onclick="onClusterTabClick(2)" class="flex items-center space-x-1.5 px-3 py-1.5 text-xs font-medium rounded-lg hover:bg-gray-50 transition-colors">
+                        <span class="w-2.5 h-2.5 rounded-full" style="background-color:#d97706"></span><span>Clúster 2</span>
+                    </button>
                 </div>
 
-                <!-- Cambiado a col-span-5 y col-span-7 para hacerlo más horizontal como la imagen -->
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-                    
-                    <!-- Panel Izquierdo: Información del Clúster -->
-                    <div class="lg:col-span-5 card-editorial p-6 flex flex-col justify-between bg-white rounded-xl border border-gray-100 shadow-sm">
-                        
-                        <div>
-                            <!-- Selector de Clústeres (Pestañas) -->
-                            <div class="flex flex-wrap gap-1.5 mb-5 pb-4 border-b border-gray-100" id="cluster-tabs">
-                                <button data-cluster="0" onclick="onClusterTabClick(0)" class="flex items-center space-x-1.5 px-3 py-1.5 text-xs font-medium rounded-lg hover:bg-gray-50 transition-colors">
-                                    <span class="w-2.5 h-2.5 rounded-full" style="background-color:#059669"></span><span>Clúster 0</span>
-                                </button>
-                                <button data-cluster="1" onclick="onClusterTabClick(1)" class="flex items-center space-x-1.5 px-3 py-1.5 text-xs font-medium rounded-lg hover:bg-gray-50 transition-colors">
-                                    <span class="w-2.5 h-2.5 rounded-full" style="background-color:#e11d48"></span><span>Clúster 1</span>
-                                </button>
-                                <button data-cluster="2" onclick="onClusterTabClick(2)" class="flex items-center space-x-1.5 px-3 py-1.5 text-xs font-medium rounded-lg hover:bg-gray-50 transition-colors">
-                                    <span class="w-2.5 h-2.5 rounded-full" style="background-color:#d97706"></span><span>Clúster 2</span>
-                                </button>
-                            </div>
-
-                            <!-- Detalle Dinámico del Clúster -->
-                            <div class="space-y-4" id="cluster-detail-box"></div>
+                <!-- Detalle Dinámico del Clúster (Aquí se inyectan título, descripción y los porcentajes horizontalmente) -->
+                <div class="space-y-4" id="cluster-detail-box">
+                    <!-- Ejemplo de la estructura interna que renderiza los porcentajes en una sola línea horizontal -->
+                    <!-- 
+                    <div class="space-y-2">
+                        <div class="flex items-center space-x-2 text-[10px] font-bold text-textMuted tracking-widest uppercase">
+                            <span class="w-2.5 h-2.5 rounded-full" style="background-color:#d97706"></span>
+                            <span>Clúster 2 • 8 Ciudades</span>
                         </div>
-
-                        <!-- Lista de Ciudades -->
-                        <div id="cities-box" class="pt-5 mt-5 border-t border-gray-100"></div>
+                        <h3 class="text-xl font-serif text-textDark leading-tight">Informalidad Urbana / Transición Regional</h3>
+                        <p class="text-xs text-textMuted leading-relaxed">Ocupación alta sostenida por autoempleo de subsistencia...</p>
                     </div>
 
-                    <!-- Panel Derecho: Gráfico PCA Ampliado -->
-                    <div class="lg:col-span-7 card-editorial p-5 flex flex-col bg-white rounded-xl border border-gray-100 shadow-sm">
-                        <div class="mb-2">
-                            <h3 class="font-bold text-sm text-textDark">Proyección PCA de las 23 ciudades</h3>
-                            <div class="flex flex-wrap items-center justify-between gap-2 mt-1">
-                                <span class="text-[10px] text-textMuted font-medium">Varianza explicada: Dim 1 = 58,4% · Dim 2 = 24,1%</span>
-                                <div class="flex gap-3 text-[10px] text-textMuted">
-                                    <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#059669]"></span> Formales</span>
-                                    <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#e11d48]"></span> Precarización Extrema</span>
-                                    <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#d97706]"></span> Informalidad Urbana</span>
-                                </div>
-                            </div>
+                    Grilla horizontal de 4 columnas para los porcentajes:
+                    <div class="grid grid-cols-4 gap-2 pt-2">
+                        <div class="bg-gray-50/80 p-2 text-center rounded border border-gray-100">
+                            <div class="font-bold text-textDark text-sm">57,3%</div>
+                            <div class="text-[8px] text-textMuted uppercase tracking-wide mt-0.5">TO Prom.</div>
                         </div>
+                        <div class="bg-gray-50/80 p-2 text-center rounded border border-gray-100">
+                            <div class="font-bold text-textDark text-sm">11,3%</div>
+                            <div class="text-[8px] text-textMuted uppercase tracking-wide mt-0.5">TD Prom.</div>
+                        </div>
+                        <div class="bg-gray-50/80 p-2 text-center rounded border border-gray-100">
+                            <div class="font-bold text-textDark text-sm">50,6%</div>
+                            <div class="text-[8px] text-textMuted uppercase tracking-wide mt-0.5">Precar.</div>
+                        </div>
+                        <div class="bg-gray-50/80 p-2 text-center rounded border border-gray-100">
+                            <div class="font-bold text-textDark text-sm">38,9%</div>
+                            <div class="text-[8px] text-textMuted uppercase tracking-wide mt-0.5">Formal</div>
+                        </div>
+                    </div>
+                    -->
+                </div>
+            </div>
 
-                        <!-- Gráfico con altura adaptada -->
-                        <div class="chart-container flex-grow relative w-full min-h-[320px]">
-                            <canvas id="pcaChart" class="absolute inset-0 w-full h-full"></canvas>
-                        </div>
+            <!-- Lista de Ciudades -->
+            <div id="cities-box" class="pt-5 mt-5 border-t border-gray-100"></div>
+        </div>
 
-                        <div class="mt-3 pt-3 border-t border-gray-50 flex justify-between items-center text-[10px] text-textMuted">
-                            <span>→ <strong>Dim 1 · Formalidad:</strong> asalariados formales</span>
-                            <span>↑ <strong>Dim 2 · Dinamismo:</strong> tasa de ocupación</span>
-                        </div>
+        <!-- Panel Derecho: Gráfico PCA Ampliado -->
+        <div class="lg:col-span-7 card-editorial p-5 flex flex-col bg-white rounded-xl border border-gray-100 shadow-sm">
+            <div class="mb-2">
+                <h3 class="font-bold text-sm text-textDark">Proyección PCA de las 23 ciudades</h3>
+                <div class="flex flex-wrap items-center justify-between gap-2 mt-1">
+                    <span class="text-[10px] text-textMuted font-medium">Varianza explicada: Dim 1 = 58,4% · Dim 2 = 24,1%</span>
+                    <div class="flex gap-3 text-[10px] text-textMuted">
+                        <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#059669]"></span> Formales</span>
+                        <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#e11d48]"></span> Precarización Extrema</span>
+                        <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#d97706]"></span> Informalidad Urbana</span>
                     </div>
                 </div>
-            </section>
+            </div>
+
+            <!-- Gráfico con altura adaptada -->
+            <div class="chart-container flex-grow relative w-full min-h-[320px]">
+                <canvas id="pcaChart" class="absolute inset-0 w-full h-full"></canvas>
+            </div>
+
+            <div class="mt-3 pt-3 border-t border-gray-50 flex justify-between items-center text-[10px] text-textMuted">
+                <span>→ <strong>Dim 1 · Formalidad:</strong> asalariados formales</span>
+                <span>↑ <strong>Dim 2 · Dinamismo:</strong> tasa de ocupación</span>
+            </div>
+        </div>
+    </div>
+</section>
 
             <!-- MÓDULO 02 -->
             <section id="mapa" class="space-y-4 pt-6 border-t border-[#e8e2d5]">
