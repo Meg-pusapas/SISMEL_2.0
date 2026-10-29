@@ -259,117 +259,65 @@
             </section>
 
             <!-- MÓDULO 01 -->
-             <!-- MÓDULO 01 -->
-<section id="clustering" class="space-y-4 pt-6 border-t border-[#e8e2d5]">
-    <div class="space-y-1">
-        <p class="text-[10px] font-bold text-burgundy uppercase tracking-widest">MÓDULO 01 · CRISP-DM GEIH</p>
-        <h2 class="font-serif font-bold text-2xl text-textDark">Diagnóstico territorial & clustering</h2>
-        <p class="text-xs text-textMuted">K-Means (k=3) sobre indicadores estandarizados de ocupación, desempleo, informalidad y formalidad asalariada.</p>
-    </div>
-
-    <!-- Cambiado items-stretch a items-start para evitar que las tarjetas se estiren y dejen espacios en blanco -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        
-        <!-- Panel Izquierdo: Información del Clúster -->
-        <!-- Eliminado 'flex-col justify-between' y ajustado 'space-y-5' para compactar el contenido -->
-        <div class="lg:col-span-6 card-editorial p-5 space-y-5 bg-white rounded-xl border border-gray-100 shadow-sm">
-            
-            <!-- Selector de Clústeres (Zona Amarilla referenciada) -->
-            <div class="flex space-x-3 text-sm text-textMuted font-medium border-b border-gray-100 pb-4">
-                <button class="flex items-center space-x-2 px-3 py-1 hover:bg-gray-50 rounded-full transition-colors">
-                    <span class="w-3 h-3 rounded-full bg-gray-400"></span><span>Clúster 0</span>
-                </button>
-                <!-- Clúster 1 Activo -->
-                <button class="flex items-center space-x-2 px-3 py-1 bg-white shadow-sm rounded-full border border-gray-200">
-                    <span class="w-3 h-3 rounded-full bg-[#8a2a2b]"></span><span class="text-textDark font-bold">Clúster 1</span>
-                </button>
-                <button class="flex items-center space-x-2 px-3 py-1 hover:bg-gray-50 rounded-full transition-colors">
-                    <span class="w-3 h-3 rounded-full bg-[#b85a24]"></span><span>Clúster 2</span>
-                </button>
-            </div>
-
-            <!-- Detalle del Clúster Activo -->
-            <div class="space-y-3" id="cluster-detail-box">
-                <div class="flex items-center space-x-2 text-[10px] font-bold text-textMuted tracking-widest uppercase">
-                    <span class="w-3 h-3 rounded-full bg-[#8a2a2b]"></span>
-                    <span>Clúster 1 • 6 Ciudades</span>
+            <section id="clustering" class="space-y-4 pt-6 border-t border-[#e8e2d5]">
+                <div class="space-y-1">
+                    <p class="text-[10px] font-bold text-burgundy uppercase tracking-widest">MÓDULO 01 · CRISP-DM GEIH</p>
+                    <h2 class="font-serif font-bold text-2xl text-textDark">Diagnóstico territorial & clustering</h2>
+                    <p class="text-xs text-textMuted">K-Means (k=3) sobre indicadores estandarizados de ocupación, desempleo, informalidad y formalidad asalariada.</p>
                 </div>
-                
-                <h3 class="text-2xl font-serif text-textDark leading-tight">Precarización Extrema</h3>
-                
-                <p class="text-sm text-textMuted leading-relaxed">
-                    Ciudades con elevadas tasas de desocupación (~12,8%) y altísima dominancia del autoempleo no regulado e informalidad (>55%).
-                </p>
-                
-                <!-- Grilla de Promedios (Mantenida compacta) -->
-                <div class="grid grid-cols-4 gap-2 pt-2">
-                    <div class="bg-gray-50/80 p-3 text-center rounded border border-gray-100">
-                        <div class="font-bold text-textDark text-lg">52,1%</div>
-                        <div class="text-[9px] text-textMuted uppercase tracking-wide mt-1">TO Prom.</div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                    
+                    <!-- Panel Izquierdo: Información del Clúster (Dinámico) -->
+                    <div class="lg:col-span-6 card-editorial p-5 space-y-5 bg-white rounded-xl border border-gray-100 shadow-sm">
+                        
+                        <!-- Selector de Clústeres (INTERACTIVO) -->
+                        <div class="flex flex-wrap gap-2 text-sm text-textMuted font-medium border-b border-gray-100 pb-4" id="cluster-tabs">
+                            <button data-cluster="0" onclick="onClusterTabClick(0)" class="flex items-center space-x-2 px-3 py-1 hover:bg-gray-50 rounded-full transition-colors">
+                                <span class="w-3 h-3 rounded-full" style="background-color:#059669"></span><span>Clúster 0</span>
+                            </button>
+                            <button data-cluster="1" onclick="onClusterTabClick(1)" class="flex items-center space-x-2 px-3 py-1 hover:bg-gray-50 rounded-full transition-colors">
+                                <span class="w-3 h-3 rounded-full" style="background-color:#e11d48"></span><span>Clúster 1</span>
+                            </button>
+                            <button data-cluster="2" onclick="onClusterTabClick(2)" class="flex items-center space-x-2 px-3 py-1 hover:bg-gray-50 rounded-full transition-colors">
+                                <span class="w-3 h-3 rounded-full" style="background-color:#d97706"></span><span>Clúster 2</span>
+                            </button>
+                        </div>
+
+                        <!-- Detalle del Clúster Activo (Se llena vía JS) -->
+                        <div class="space-y-3" id="cluster-detail-box"></div>
+
+                        <!-- Lista de Ciudades (Se llena vía JS) -->
+                        <div id="cities-box" class="pt-4 border-t border-gray-50"></div>
+
+                        <!-- Paradoja (Se llena vía JS) -->
+                        <div id="paradox-box" class="bg-[#fdf9f1] p-5 rounded-xl border border-[#eaddbc] space-y-3 hidden"></div>
                     </div>
-                    <div class="bg-gray-50/80 p-3 text-center rounded border border-gray-100">
-                        <div class="font-bold text-textDark text-lg">12,8%</div>
-                        <div class="text-[9px] text-textMuted uppercase tracking-wide mt-1">TD Prom.</div>
-                    </div>
-                    <div class="bg-gray-50/80 p-3 text-center rounded border border-gray-100">
-                        <div class="font-bold text-textDark text-lg">55,4%</div>
-                        <div class="text-[9px] text-textMuted uppercase tracking-wide mt-1">Precar. Prom.</div>
-                    </div>
-                    <div class="bg-gray-50/80 p-3 text-center rounded border border-gray-100">
-                        <div class="font-bold text-textDark text-lg">34,2%</div>
-                        <div class="text-[9px] text-textMuted uppercase tracking-wide mt-1">Formal Prom.</div>
+
+                    <!-- Panel Derecho: Gráfico PCA -->
+                    <div class="lg:col-span-6 card-editorial p-5 space-y-3 flex flex-col bg-white rounded-xl border border-gray-100 shadow-sm min-h-[450px]">
+                        <div>
+                            <div class="flex items-center justify-between mb-1">
+                                <h3 class="font-bold text-sm text-textDark">Proyección PCA de las 23 ciudades</h3>
+                                <span class="text-[10px] text-textMuted font-medium">Varianza explicada: Dim 1 = 58,4% · Dim 2 = 24,1%</span>
+                            </div>
+                            <div class="flex gap-3 text-[10px] text-textMuted mb-2">
+                                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-600"></span> Formales</span>
+                                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-rose-600"></span> Precarización Extrema</span>
+                                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-amber-600"></span> Informalidad Urbana</span>
+                            </div>
+                        </div>
+
+                        <div class="chart-container flex-grow relative w-full h-full min-h-[300px]">
+                            <canvas id="pcaChart" class="absolute inset-0 w-full h-full"></canvas>
+                        </div>
+
+                        <p class="text-[10px] text-textMuted text-center mt-2 pt-2 border-t border-gray-50">
+                            → <strong>Dim 1 · Formalidad:</strong> asalariados formales &nbsp;&nbsp;|&nbsp;&nbsp; ↑ <strong>Dim 2 · Dinamismo:</strong> tasa de ocupación
+                        </p>
                     </div>
                 </div>
-            </div>
-
-            <!-- Única lista de Ciudades (Corrigiendo la duplicidad de la zona azul) -->
-            <div id="cities-box" class="pt-4 border-t border-gray-50">
-                <h4 class="text-[10px] text-textMuted font-bold uppercase tracking-widest mb-3">
-                    Ciudades del Clúster
-                </h4>
-                <div class="flex flex-wrap gap-2">
-                    <!-- Ciudad activa de ejemplo -->
-                    <button class="px-3 py-1.5 rounded-full border border-[#8a2a2b] text-xs text-white bg-[#8a2a2b] font-medium shadow-sm">Cúcuta</button>
-                    <!-- Resto de ciudades del cluster 1 correctas -->
-                    <button class="px-3 py-1.5 rounded-full border border-gray-200 text-xs text-textDark bg-white hover:bg-gray-50 transition-colors">Quibdó</button>
-                    <button class="px-3 py-1.5 rounded-full border border-gray-200 text-xs text-textDark bg-white hover:bg-gray-50 transition-colors">Cartagena</button>
-                    <button class="px-3 py-1.5 rounded-full border border-gray-200 text-xs text-textDark bg-white hover:bg-gray-50 transition-colors">Florencia</button>
-                    <button class="px-3 py-1.5 rounded-full border border-gray-200 text-xs text-textDark bg-white hover:bg-gray-50 transition-colors">Sincelejo</button>
-                    <button class="px-3 py-1.5 rounded-full border border-gray-200 text-xs text-textDark bg-white hover:bg-gray-50 transition-colors">Riohacha</button>
-                </div>
-            </div>
-
-            <!-- Paradoja Oculta (Solo para Pasto) -->
-            <div id="paradox-box" class="bg-[#fdf9f1] p-5 rounded-xl border border-[#eaddbc] space-y-3 hidden">
-                <!-- Contenido de la paradoja aquí -->
-            </div>
-        </div>
-
-        <!-- Panel Derecho: Gráfico PCA -->
-        <!-- Se mantiene h-full o min-h-[400px] para asegurar que el gráfico tenga espacio -->
-        <div class="lg:col-span-6 card-editorial p-5 space-y-3 flex flex-col bg-white rounded-xl border border-gray-100 shadow-sm min-h-[450px]">
-            <div>
-                <div class="flex items-center justify-between mb-1">
-                    <h3 class="font-bold text-sm text-textDark">Proyección PCA de las 23 ciudades</h3>
-                    <span class="text-[10px] text-textMuted font-medium">Varianza explicada: Dim 1 = 58,4% · Dim 2 = 24,1%</span>
-                </div>
-                <div class="flex gap-3 text-[10px] text-textMuted mb-2">
-                    <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-gray-400"></span> Formales</span>
-                    <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#8a2a2b]"></span> Precarización Extrema</span>
-                    <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#b85a24]"></span> Informalidad Urbana</span>
-                </div>
-            </div>
-
-            <div class="chart-container flex-grow relative w-full h-full min-h-[300px]">
-                <canvas id="pcaChart" class="absolute inset-0 w-full h-full"></canvas>
-            </div>
-
-            <p class="text-[10px] text-textMuted text-center mt-2 pt-2 border-t border-gray-50">
-                → <strong>Dim 1 · Formalidad:</strong> asalariados formales &nbsp;&nbsp;|&nbsp;&nbsp; ↑ <strong>Dim 2 · Dinamismo:</strong> tasa de ocupación
-            </p>
-        </div>
-    </div>
-</section>
+            </section>
 
             <!-- MÓDULO 02 -->
             <section id="mapa" class="space-y-4 pt-6 border-t border-[#e8e2d5]">
@@ -1110,6 +1058,93 @@
             select.addEventListener('change', (e) => updateDashboard(e.target.value));
         }
 
+        // === NUEVA: renderiza el panel de información del clúster ===
+        function renderClusterInfo(clusterId, activeCity) {
+            const info = clusterInfo[clusterId];
+            const citiesInCluster = cityData.filter(c => c.cluster === clusterId);
+            const count = citiesInCluster.length;
+
+            // Calcular promedios del clúster
+            const avgTo = citiesInCluster.reduce((s, c) => s + c.to, 0) / count;
+            const avgTd = citiesInCluster.reduce((s, c) => s + c.td, 0) / count;
+            const avgPrec = citiesInCluster.reduce((s, c) => s + c.pct_precarizacion, 0) / count;
+            const avgFormal = citiesInCluster.reduce((s, c) => s + c.pct_empleado_particular, 0) / count;
+
+            // 1. Estado visual de las pestañas
+            document.querySelectorAll('#cluster-tabs button').forEach(tab => {
+                const isActive = +tab.dataset.cluster === clusterId;
+                tab.className = `flex items-center space-x-2 px-3 py-1 rounded-full transition-colors ${isActive ? 'bg-white shadow-sm border border-gray-200' : 'hover:bg-gray-50 text-textMuted'}`;
+                const spanText = tab.querySelector('span:last-child');
+                spanText.className = isActive ? 'text-textDark font-bold' : '';
+            });
+
+            // 2. Cabecera + descripción + promedios
+            const shortTitle = info.title.split('·')[1]?.trim() || info.title;
+            document.getElementById('cluster-detail-box').innerHTML = `
+                <div class="flex items-center space-x-2 text-[10px] font-bold text-textMuted tracking-widest uppercase">
+                    <span class="w-3 h-3 rounded-full" style="background-color:${info.colorHex}"></span>
+                    <span>Clúster ${clusterId} • ${count} Ciudades</span>
+                </div>
+                <h3 class="text-2xl font-serif text-textDark leading-tight mt-1">${shortTitle}</h3>
+                <p class="text-sm text-textMuted leading-relaxed mt-2">${info.desc}</p>
+                <div class="grid grid-cols-4 gap-2 pt-2">
+                    <div class="bg-gray-50/80 p-3 text-center rounded border border-gray-100">
+                        <div class="font-bold text-textDark text-lg">${avgTo.toFixed(1).replace('.', ',')}%</div>
+                        <div class="text-[9px] text-textMuted uppercase tracking-wide mt-1">TO Prom.</div>
+                    </div>
+                    <div class="bg-gray-50/80 p-3 text-center rounded border border-gray-100">
+                        <div class="font-bold text-textDark text-lg">${avgTd.toFixed(1).replace('.', ',')}%</div>
+                        <div class="text-[9px] text-textMuted uppercase tracking-wide mt-1">TD Prom.</div>
+                    </div>
+                    <div class="bg-gray-50/80 p-3 text-center rounded border border-gray-100">
+                        <div class="font-bold text-textDark text-lg">${avgPrec.toFixed(1).replace('.', ',')}%</div>
+                        <div class="text-[9px] text-textMuted uppercase tracking-wide mt-1">Precar. Prom.</div>
+                    </div>
+                    <div class="bg-gray-50/80 p-3 text-center rounded border border-gray-100">
+                        <div class="font-bold text-textDark text-lg">${avgFormal.toFixed(1).replace('.', ',')}%</div>
+                        <div class="text-[9px] text-textMuted uppercase tracking-wide mt-1">Formal Prom.</div>
+                    </div>
+                </div>
+            `;
+
+            // 3. Lista de ciudades (con la activa resaltada)
+            const citiesBtns = citiesInCluster.map(c => {
+                const isActive = c.ciudad === activeCity;
+                return `<button onclick="selectCityFromTable('${c.ciudad}')" class="px-3 py-1.5 rounded-full border text-xs ${isActive ? 'border-[#8a2a2b] text-white bg-[#8a2a2b] font-medium shadow-sm' : 'border-gray-200 text-textDark bg-white hover:bg-gray-50 transition-colors'}">${c.ciudad}${c.ciudad === 'Pasto' ? ' ★' : ''}</button>`;
+            }).join('');
+            document.getElementById('cities-box').innerHTML = `
+                <h4 class="text-[10px] text-textMuted font-bold uppercase tracking-widest mb-3">Ciudades del Clúster</h4>
+                <div class="flex flex-wrap gap-2">${citiesBtns}</div>
+            `;
+
+            // 4. Paradoja del clúster
+            document.getElementById('paradox-box').classList.remove('hidden');
+            document.getElementById('paradox-box').innerHTML = `
+                <div class="flex items-center gap-1.5 text-xs font-bold text-amber-900">
+                    <i data-lucide="scale" class="w-4 h-4 text-burgundy"></i>
+                    <span>${info.paradoxTitle}</span>
+                </div>
+                <p class="text-xs text-amber-900/90 leading-relaxed mt-1">${info.paradoxText}</p>
+            `;
+
+            if (window.lucide) lucide.createIcons();
+        }
+
+        // === NUEVA: maneja el clic en las pestañas de clúster ===
+        function onClusterTabClick(clusterId) {
+            const currentCityName = document.getElementById('city-select').value;
+            const currentCity = cityData.find(c => c.ciudad === currentCityName);
+            if (currentCity && currentCity.cluster === clusterId) {
+                renderClusterInfo(clusterId, currentCity.ciudad);
+            } else {
+                const firstCity = cityData.find(c => c.cluster === clusterId);
+                if (firstCity) {
+                    document.getElementById('city-select').value = firstCity.ciudad;
+                    updateDashboard(firstCity.ciudad);
+                }
+            }
+        }
+
         function updateDashboard(cityName) {
             const city = cityData.find(c => c.ciudad === cityName) || cityData[0];
             const cls = clusterInfo[city.cluster];
@@ -1174,26 +1209,8 @@
                 </div>
             `;
 
-            const clusterCitiesList = cityData.filter(c => c.cluster === city.cluster).map(c => 
-                `<span class="px-2 py-0.5 rounded-full bg-[#eee9df] border border-[#d8d0c0] text-[10px] ${c.ciudad === city.ciudad ? 'font-bold bg-burgundy text-white' : 'text-textDark'}">${c.ciudad}${c.ciudad==='Pasto'?' ★':''}</span>`
-            ).join(' ');
-
-            document.getElementById('cluster-detail-box').innerHTML = `
-                <div class="space-y-1">
-                    <p class="text-[10px] font-bold uppercase text-burgundy">CLÚSTER ${city.cluster} · ${cityData.filter(c=>c.cluster===city.cluster).length} CIUDADES</p>
-                    <h3 class="font-serif font-bold text-xl text-textDark">${cls.title}</h3>
-                </div>
-                <p class="text-xs text-textMuted leading-relaxed">${cls.desc}</p>
-                <div class="flex flex-wrap gap-1 pt-1">${clusterCitiesList}</div>
-            `;
-
-            document.getElementById('paradox-box').innerHTML = `
-                <div class="flex items-center gap-1.5 text-xs font-bold text-amber-900">
-                    <i data-lucide="scale" class="w-4 h-4 text-burgundy"></i>
-                    <span>${cls.paradoxTitle}</span>
-                </div>
-                <p class="text-xs text-amber-900/90 leading-relaxed">${cls.paradoxText}</p>
-            `;
+            // Actualiza panel de clúster (esto reemplaza todo el bloque de renderClusterInfo previo)
+            renderClusterInfo(city.cluster, city.ciudad);
 
             if (window.lucide) lucide.createIcons();
 
