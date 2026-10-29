@@ -346,9 +346,9 @@
                             </div>
                         </div>
 
-                        <!-- Contenedor del Mapa con altura fija (Soluciona el problema de Leaflet en blanco) -->
+                        <!-- Contenedor del Mapa con altura fija -->
                         <div class="relative w-full h-[420px] rounded-xl border border-[#e2dacd] overflow-hidden">
-                            <div id="map" class="absolute inset-0 w-full h-full"></div>
+                            <div id="map" class="absolute inset-0 w-full h-full bg-[#f5f0e6]"></div>
                             <!-- Leyenda dinámica -->
                             <div id="map-legend" class="absolute bottom-4 left-4 z-[400] bg-white border border-gray-200 shadow-md rounded-lg p-2.5 text-[10px] pointer-events-none"></div>
                         </div>
@@ -998,7 +998,7 @@
         let mapInstance = null;
         let mapLayerGroup = null;
         let heatLayerInstance = null;
-        let currentMapMode = 'heat_abs'; // Estado global para el modo del mapa
+        let currentMapMode = 'heat_abs';
 
         const clusterInfo = {
             0: {
@@ -1060,7 +1060,10 @@
             safeRun('tabla', renderTable);
             safeRun('dashboard', () => updateDashboard("Pasto"));
             safeRun('grafico PCA', () => { if (window.Chart) initPcaChart(); });
-            safeRun('mapa', () => { if (window.L) initLeafletMap(); });
+            // El mapa se inicializa después para garantizar que el layout esté listo
+            setTimeout(() => {
+                safeRun('mapa', () => { if (window.L) initLeafletMap(); });
+            }, 100);
             safeRun('SISMEL', initSismel);
             safeRun('fecha', smFecha);
             safeRun('iconos2', () => { if (window.lucide) lucide.createIcons(); });
@@ -1160,7 +1163,6 @@
             badgeEl.className = `badge-pill ${cls.badgeClass}`;
             badgeEl.textContent = cls.title;
 
-            // Actualizar Ciudad en Foco en el Módulo 02
             document.getElementById('map-focus-card').innerHTML = `
                 <div class="flex justify-between items-start mb-2">
                     <div>
@@ -1239,7 +1241,6 @@
 
             if (window.lucide) lucide.createIcons();
 
-            // Actualizar panel derecho del mapa manteniendo el modo actual
             safeRun('ranking', () => renderTopCitiesRanking(currentMapMode));
             safeRun('grafico evolucion', () => { if (window.Chart) updateComboChart(city); });
             safeRun('grafico causas', () => { if (window.Chart) updatePieChart(city); });
@@ -1417,53 +1418,50 @@
         }
 
         function initLeafletMap() {
-            mapInstance = L.map('map', { center: [4.5709, -74.2973], zoom: 5 });
+            const mapEl = document.getElementById('map');
+            if (!mapEl) return;
+
+            mapInstance = L.map('map', { center: [4.5709, -74.2973], zoom: 5, zoomControl: false });
+            L.control.zoom({ position: 'topleft' }).addTo(mapInstance);
             
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             }).addTo(mapInstance);
 
             mapLayerGroup = L.layerGroup().addTo(mapInstance);
-            
-            // Llamar al modo actual
-            setMapMode(currentMapMode);
 
             const bounds = L.latLngBounds(cityData.map(c => [c.lat, c.lng]));
             mapInstance.fitBounds(bounds, { padding: [30, 30] });
+
+            // Esperar un poco para que flexbox asigne las dimensiones antes de forzar resize y pintar el calor
             setTimeout(() => {
                 if (mapInstance) {
                     mapInstance.invalidateSize();
                     mapInstance.fitBounds(bounds, { padding: [30, 30] });
+                    setMapMode(currentMapMode);
                 }
-            }, 500); // Aumentado a 500ms para asegurar que el layout esté listo
+            }, 300);
         }
 
         function setMapMode(mode) {
             currentMapMode = mode;
 
-            // 1. Actualizar estado de los botones (siempre, incluso si el mapa falla)
+            // 1. Actualizar estado de los botones
             document.getElementById('btn-map-abs').className = mode === 'heat_abs' ? 'px-3 py-1.5 rounded-lg bg-burgundy text-white font-medium shadow-sm' : 'px-3 py-1.5 rounded-lg bg-[#eee9df] text-textDark hover:bg-[#e2dacd] font-medium transition-colors';
             document.getElementById('btn-map-pct').className = mode === 'heat_pct' ? 'px-3 py-1.5 rounded-lg bg-burgundy text-white font-medium shadow-sm' : 'px-3 py-1.5 rounded-lg bg-[#eee9df] text-textDark hover:bg-[#e2dacd] font-medium transition-colors';
             document.getElementById('btn-map-cls').className = mode === 'clusters' ? 'px-3 py-1.5 rounded-lg bg-burgundy text-white font-medium shadow-sm' : 'px-3 py-1.5 rounded-lg bg-[#eee9df] text-textDark hover:bg-[#e2dacd] font-medium transition-colors';
 
-            // 2. Actualizar panel derecho (siempre, independientemente del mapa)
+            // 2. Actualizar panel derecho
             renderTopCitiesRanking(mode);
             updateMapLegend(mode);
 
-            // 3. Actualizar el mapa (solo si está listo)
+            // 3. Actualizar mapa
             if (!mapInstance || !mapLayerGroup) return;
             
             mapLayerGroup.clearLayers();
             if (heatLayerInstance) {
                 mapInstance.removeLayer(heatLayerInstance);
                 heatLayerInstance = null;
-            }
-
-            if (mode === 'heat_abs' || mode === 'heat_pct') {
-                const points = cityData.map(c => [c.lat, c.lng, mode === 'heat_abs' ? c.suicidios_eco_lab / 250 : c.pct_eco_conocido / 25]);
-                if (L.heatLayer) {
-                    heatLayerInstance = L.heatLayer(points, { radius: 25, blur: 15, maxZoom: 10 }).addTo(mapInstance);
-                }
             }
 
             cityData.forEach(c => {
@@ -1485,6 +1483,19 @@
                     updateDashboard(c.ciudad);
                 });
             });
+
+            if (mode === 'heat_abs' || mode === 'heat_pct') {
+                const points = cityData.map(c => [c.lat, c.lng, mode === 'heat_abs' ? c.suicidios_eco_lab / 250 : c.pct_eco_conocido / 25]);
+                if (L.heatLayer) {
+                    // Un segundo setTimeout para asegurar que el canvas del mapa ya mide > 0
+                    setTimeout(() => {
+                        const mapEl = document.getElementById('map');
+                        if (mapEl && mapEl.clientWidth > 0 && mapEl.clientHeight > 0) {
+                            heatLayerInstance = L.heatLayer(points, { radius: 25, blur: 15, maxZoom: 10 }).addTo(mapInstance);
+                        }
+                    }, 100);
+                }
+            }
         }
 
         function updateMapLegend(mode) {
