@@ -388,13 +388,22 @@
                 <div class="space-y-1">
                     <p class="text-[10px] font-bold text-burgundy uppercase tracking-widest">MÓDULO 03 · SERIE 2015–2026 (2026 PARCIAL)</p>
                     <h2 class="font-serif font-bold text-2xl text-textDark">Evolución temporal multivariable · <span id="combo-city-name" class="italic text-burgundy">Pasto</span></h2>
-                    <p class="text-xs text-textMuted">Suicidios registrados (columnas) frente a indicadores laborales (líneas, eje derecho en %).</p>
+                    <p class="text-xs text-textMuted">Suicidios registrados frente a indicadores laborales. Utiliza las pestañas para ver cada dimensión por separado.</p>
                 </div>
 
                 <div class="card-editorial p-5 space-y-4">
+                    <!-- Pestañas de la gráfica -->
+                    <div class="flex flex-wrap gap-1.5 text-xs border-b border-[#eee8dc] pb-3" id="combo-tabs">
+                        <button onclick="setComboMode('general')" data-mode="general" class="px-3 py-1.5 rounded-lg bg-burgundy text-white font-medium shadow-sm transition-colors">General</button>
+                        <button onclick="setComboMode('suicidios')" data-mode="suicidios" class="px-3 py-1.5 rounded-lg bg-[#eee9df] text-textDark hover:bg-[#e2dacd] font-medium transition-colors">Suicidios</button>
+                        <button onclick="setComboMode('empleo')" data-mode="empleo" class="px-3 py-1.5 rounded-lg bg-[#eee9df] text-textDark hover:bg-[#e2dacd] font-medium transition-colors">Empleo (TO/TD)</button>
+                        <button onclick="setComboMode('calidad')" data-mode="calidad" class="px-3 py-1.5 rounded-lg bg-[#eee9df] text-textDark hover:bg-[#e2dacd] font-medium transition-colors">Calidad (Prec./Form.)</button>
+                    </div>
+
                     <div class="chart-container min-h-[320px]">
                         <canvas id="comboEvolucionChart"></canvas>
                     </div>
+                    
                     <p class="text-[11px] text-textMuted">* <strong>2026 es un año parcial:</strong> suicidios de enero a julio (INMLCF) y trimestre móvil may–jul (GEIH). No es comparable con años completos; por eso su barra es más clara y su tramo de línea, punteado.</p>
 
                     <div class="p-3 bg-[#f5f0e6] rounded-xl border border-[#e8e2d5] text-xs text-textMuted flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
@@ -1000,6 +1009,7 @@
         let mapLayerGroup = null;
         let heatLayerInstance = null;
         let currentMapMode = 'heat_abs';
+        let currentComboMode = 'general'; // Variable para mantener la pestaña de la gráfica activa
 
         const clusterInfo = {
             0: {
@@ -1243,7 +1253,7 @@
             if (window.lucide) lucide.createIcons();
 
             safeRun('ranking', () => renderTopCitiesRanking(currentMapMode));
-            safeRun('grafico evolucion', () => { if (window.Chart) updateComboChart(city); });
+            safeRun('grafico evolucion', () => { if (window.Chart) updateComboChart(city, currentComboMode); });
             safeRun('grafico causas', () => { if (window.Chart) updatePieChart(city); });
         }
 
@@ -1306,84 +1316,119 @@
             });
         }
 
-        function updateComboChart(city) {
+        // NUEVA FUNCIÓN PARA CAMBIAR ENTRE PESTAÑAS DE LA GRÁFICA
+        function setComboMode(mode) {
+            currentComboMode = mode;
+            
+            // Actualizar estado visual de las pestañas
+            document.querySelectorAll('#combo-tabs button').forEach(btn => {
+                const isActive = btn.dataset.mode === mode;
+                btn.className = `px-3 py-1.5 rounded-lg font-medium transition-colors ${isActive ? 'bg-burgundy text-white shadow-sm' : 'bg-[#eee9df] text-textDark hover:bg-[#e2dacd]'}`;
+            });
+
+            // Volver a dibujar la gráfica con el nuevo modo
+            const cityName = document.getElementById('city-select').value;
+            const city = cityData.find(c => c.ciudad === cityName) || cityData[0];
+            if (window.Chart) updateComboChart(city, mode);
+        }
+
+        function updateComboChart(city, mode = 'general') {
             const ctx = document.getElementById('comboEvolucionChart').getContext('2d');
             const hist = city.historico;
 
             if (comboChartInstance) comboChartInstance.destroy();
 
+            // Definir los datasets base
+            const dSuicidios = {
+                type: 'bar',
+                label: 'Suicidios Anuales',
+                data: hist.suicidios,
+                backgroundColor: hist.anios.map((a, i) => i === hist.anios.length - 1 ? 'rgba(155, 44, 44, 0.08)' : 'rgba(155, 44, 44, 0.25)'),
+                borderColor: '#9b2c2c',
+                borderWidth: 1.5,
+                borderRadius: 4,
+                yAxisID: mode === 'general' ? 'y1' : 'y'
+            };
+            const dTD = {
+                type: 'line',
+                label: 'Desocupación (TD %)',
+                data: hist.td,
+                borderColor: '#9b2c2c',
+                backgroundColor: '#9b2c2c',
+                borderWidth: 2,
+                tension: 0.3,
+                segment: { borderDash: c => c.p1DataIndex === hist.anios.length - 1 ? [5, 4] : undefined },
+                yAxisID: 'y'
+            };
+            const dTO = {
+                type: 'line',
+                label: 'Ocupación (TO %)',
+                data: hist.to,
+                borderColor: '#1c1917',
+                backgroundColor: '#1c1917',
+                borderWidth: 2.5,
+                tension: 0.3,
+                segment: { borderDash: c => c.p1DataIndex === hist.anios.length - 1 ? [5, 4] : undefined },
+                yAxisID: 'y'
+            };
+            const dPrec = {
+                type: 'line',
+                label: 'Precarización (%)',
+                data: hist.precarizacion,
+                borderColor: '#d97706',
+                backgroundColor: '#d97706',
+                borderWidth: 2,
+                tension: 0.3,
+                segment: { borderDash: c => c.p1DataIndex === hist.anios.length - 1 ? [5, 4] : undefined },
+                yAxisID: 'y'
+            };
+            const dFormal = {
+                type: 'line',
+                label: 'Asalariados Formales (%)',
+                data: hist.formal,
+                borderColor: '#686259',
+                borderDash: [4, 4],
+                borderWidth: 2,
+                tension: 0.3,
+                segment: { borderDash: c => c.p1DataIndex === hist.anios.length - 1 ? [5, 4] : undefined },
+                yAxisID: 'y'
+            };
+
+            let datasets = [];
+            let scales = {
+                x: { grid: { color: '#eee8dc' } }
+            };
+
+            // Configurar según el modo
+            if (mode === 'general') {
+                datasets = [dSuicidios, dTD, dTO, dPrec, dFormal];
+                scales.y = { type: 'linear', position: 'right', grid: { color: '#eee8dc' }, title: { display: true, text: '%', font: { size: 10 } } };
+                scales.y1 = { type: 'linear', position: 'left', grid: { drawOnChartArea: false }, title: { display: true, text: 'Casos', font: { size: 10 } } };
+            } else if (mode === 'suicidios') {
+                datasets = [dSuicidios];
+                scales.y = { type: 'linear', position: 'left', grid: { color: '#eee8dc' }, title: { display: true, text: 'Suicidios', font: { size: 10 } } };
+            } else if (mode === 'empleo') {
+                datasets = [dTD, dTO];
+                scales.y = { type: 'linear', position: 'left', grid: { color: '#eee8dc' }, title: { display: true, text: 'Tasa (%)', font: { size: 10 } } };
+            } else if (mode === 'calidad') {
+                datasets = [dPrec, dFormal];
+                scales.y = { type: 'linear', position: 'left', grid: { color: '#eee8dc' }, title: { display: true, text: 'Porcentaje (%)', font: { size: 10 } } };
+            }
+
             comboChartInstance = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: hist.anios.map((a, i) => i === hist.anios.length - 1 ? a + '*' : a),
-                    datasets: [
-                        {
-                            type: 'bar',
-                            label: 'Suicidios Anuales',
-                            data: hist.suicidios,
-                            backgroundColor: hist.anios.map((a, i) => i === hist.anios.length - 1 ? 'rgba(155, 44, 44, 0.08)' : 'rgba(155, 44, 44, 0.25)'),
-                            borderColor: '#9b2c2c',
-                            borderWidth: 1.5,
-                            borderRadius: 4,
-                            yAxisID: 'y1'
-                        },
-                        {
-                            type: 'line',
-                            label: 'Desocupación (TD %)',
-                            data: hist.td,
-                            borderColor: '#9b2c2c',
-                            backgroundColor: '#9b2c2c',
-                            borderWidth: 2,
-                            tension: 0.3,
-                            segment: { borderDash: c => c.p1DataIndex === hist.anios.length - 1 ? [5, 4] : undefined },
-                            yAxisID: 'y'
-                        },
-                        {
-                            type: 'line',
-                            label: 'Ocupación (TO %)',
-                            data: hist.to,
-                            borderColor: '#1c1917',
-                            backgroundColor: '#1c1917',
-                            borderWidth: 2.5,
-                            tension: 0.3,
-                            segment: { borderDash: c => c.p1DataIndex === hist.anios.length - 1 ? [5, 4] : undefined },
-                            yAxisID: 'y'
-                        },
-                        {
-                            type: 'line',
-                            label: 'Precarización (%)',
-                            data: hist.precarizacion,
-                            borderColor: '#d97706',
-                            backgroundColor: '#d97706',
-                            borderWidth: 2,
-                            tension: 0.3,
-                            segment: { borderDash: c => c.p1DataIndex === hist.anios.length - 1 ? [5, 4] : undefined },
-                            yAxisID: 'y'
-                        },
-                        {
-                            type: 'line',
-                            label: 'Asalariados Formales (%)',
-                            data: hist.formal,
-                            borderColor: '#686259',
-                            borderDash: [4, 4],
-                            borderWidth: 2,
-                            tension: 0.3,
-                            segment: { borderDash: c => c.p1DataIndex === hist.anios.length - 1 ? [5, 4] : undefined },
-                            yAxisID: 'y'
-                        }
-                    ]
+                    datasets: datasets
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
                     plugins: {
-                        legend: { position: 'bottom', labels: { color: '#1c1917', font: { size: 10 } } }
+                        legend: { position: 'bottom', labels: { color: '#1c1917', font: { size: 10 }, usePointStyle: true } }
                     },
-                    scales: {
-                        x: { grid: { color: '#eee8dc' } },
-                        y: { type: 'linear', position: 'right', grid: { color: '#eee8dc' } },
-                        y1: { type: 'linear', position: 'left', grid: { drawOnChartArea: false } }
-                    }
+                    scales: scales
                 }
             });
         }
@@ -1422,7 +1467,6 @@
             const mapEl = document.getElementById('map');
             if (!mapEl) return;
 
-            // Verificar que el contenedor tenga dimensiones (evita inicialización en 0x0)
             if (mapEl.clientWidth === 0 || mapEl.clientHeight === 0) {
                 setTimeout(initLeafletMap, 100);
                 return;
